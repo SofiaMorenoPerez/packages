@@ -13,158 +13,127 @@ import co.edu.unbosque.proyectomodulofirst.entity.EmpleadoAdmin;
 import co.edu.unbosque.proyectomodulofirst.exception.EdadException;
 import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
-import co.edu.unbosque.proyectomodulofirst.exception.ResourceNotFoundException;
 import co.edu.unbosque.proyectomodulofirst.exception.ZonaAsignadaException;
 import co.edu.unbosque.proyectomodulofirst.repository.EmpleadoAdminRepository;
 
-/**
- * Servicio encargado de la lógica de negocio para EmpleadoAdmin.
- * Permite realizar operaciones CRUD y validaciones de datos.
- */
 @Service
-public class EmpleadoAdminService implements CRUDOperation<EmpleadoAdminDTO>{
-	
-	@Autowired
-	private EmpleadoAdminRepository empleadoAdminRepo;
+public class EmpleadoAdminService implements CRUDOperation<EmpleadoAdminDTO> {
 
-	@Autowired
-	private ModelMapper mapper;
-	
-	public EmpleadoAdminService() {
+    @Autowired
+    private EmpleadoAdminRepository empleadoAdminRepo;
 
-	}
+    @Autowired
+    private ModelMapper mapper;
 
-	/**
-	 * Crea un nuevo administrador con validaciones.
-	 * 
-	 * @param data datos del administrador
-	 * @return resultado de la operación
-	 */
-	@Override
-	public int create(EmpleadoAdminDTO data) {	
-		if (data == null) {
-	        throw new InvalidDataException("Los datos del administrador no pueden ser nulos");
-	    }
+    public EmpleadoAdminService() {
+    }
 
-	    if (data.getNombre() == null || data.getNombre().isEmpty()) {
-	        throw new InvalidDataException("El nombre es obligatorio");
-	    }
+    @Override
+    public int create(EmpleadoAdminDTO data) {
 
-	    if (data.getEdad() <= 0) {
-	        throw new InvalidDataException("La edad debe ser válida");
-	    }
+        try {
+            if (data == null)
+                throw new InvalidDataException("");
 
-	    if (data.getFechaInicio() == null) {
-	        throw new InvalidDataException("La fecha de inicio es obligatoria");
-	    }
+            if (data.getNombre() == null || data.getNombre().isEmpty())
+                throw new InvalidDataException("");
 
-	    if (data.getZonaAsignada() == null || data.getZonaAsignada().isEmpty()) {
-	        throw new InvalidDataException("La zona asignada es obligatoria");
-	    }
-	    
-	    if (!data.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
-	        throw new NombreException("El nombre solo puede contener letras y espacios");
-	    }
-	    
-	    if (data.getEdad() < 0 || data.getEdad() > 120) {
-	        throw new EdadException("La edad debe estar entre 0 y 120 años");
-	    }
-	    
-	    if (!data.getZonaAsignada().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
-	        throw new ZonaAsignadaException("La zona asignada solo puede contener letras y espacios");
-	    }
+            if (data.getEdad() <= 0)
+                throw new InvalidDataException("");
 
-		EmpleadoAdmin entity = new EmpleadoAdmin(data.getNombre(), data.getEdad(), data.getFechaInicio(), data.getZonaAsignada());
-		empleadoAdminRepo.save(entity);
-		return 0;
-	}
+            if (data.getFechaInicio() == null)
+                throw new InvalidDataException("");
 
-	/**
-	 * Obtiene todos los administradores registrados.
-	 * 
-	 * @return lista de administradores
-	 */
-	@Override
-	public List<EmpleadoAdminDTO> getAll() {
-		List<EmpleadoAdmin> entityList = (List<EmpleadoAdmin>) empleadoAdminRepo.findAll();
-        
-		if (entityList.isEmpty()) {
-	        throw new ResourceNotFoundException("No hay administradores registrados");
-	    }
-		
-		List<EmpleadoAdminDTO> dtoList = new ArrayList<>();
+            if (data.getZonaAsignada() == null || data.getZonaAsignada().isEmpty())
+                throw new InvalidDataException("");
 
-        entityList.forEach((entidad) -> {
+            if (!data.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"))
+                throw new NombreException("");
+
+            if (data.getEdad() < 0 || data.getEdad() > 120)
+                throw new EdadException("");
+
+            if (!data.getZonaAsignada().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"))
+                throw new ZonaAsignadaException("");
+
+        } catch (NombreException e) {
+            return 1;
+        } catch (EdadException e) {
+            return 2;
+        } catch (ZonaAsignadaException e) {
+            return 3;
+        } catch (InvalidDataException e) {
+            return 4;
+        }
+
+        empleadoAdminRepo.save(mapper.map(data, EmpleadoAdmin.class));
+        return 0;
+    }
+
+    @Override
+    public List<EmpleadoAdminDTO> getAll() {
+        List<EmpleadoAdmin> entityList = (List<EmpleadoAdmin>) empleadoAdminRepo.findAll();
+        List<EmpleadoAdminDTO> dtoList = new ArrayList<>();
+
+        entityList.forEach(entidad -> {
             EmpleadoAdminDTO dto = mapper.map(entidad, EmpleadoAdminDTO.class);
             dtoList.add(dto);
         });
 
         return dtoList;
-	}
+    }
 
-	/**
-	 * Elimina un administrador por id.
-	 * 
-	 * @param id identificador del administrador
-	 * @return resultado de la operación
-	 */
-	@Override
-	public int deleteById(Long id) {
-		Optional<EmpleadoAdmin> encontrado = empleadoAdminRepo.findById(id);
+    @Override
+    public int deleteById(Long id) {
+        Optional<EmpleadoAdmin> encontrado = empleadoAdminRepo.findById(id);
 
-	    if (!encontrado.isPresent()) {
-	    	throw new ResourceNotFoundException("Administrador con id " + id + " no encontrado");
-	    }
-	    empleadoAdminRepo.delete(encontrado.get());
-	    return 0;
-	}
+        if (encontrado.isPresent()) {
+            empleadoAdminRepo.delete(encontrado.get());
+            return 0;
+        }
 
-	/**
-	 * Actualiza un administrador por id.
-	 * 
-	 * @param id identificador del administrador
-	 * @param newData nuevos datos
-	 * @return resultado de la operación
-	 */
-	@Override
-	public int updateById(Long id, EmpleadoAdminDTO newData) {
-		Optional<EmpleadoAdmin> encontrado = empleadoAdminRepo.findById(id);
-		
-		if (!encontrado.isPresent()) {
-	        throw new ResourceNotFoundException("Administrador con id " + id + " no encontrado");
-	    }
+        return 1;
+    }
 
-	    if (newData == null) {
-	        throw new InvalidDataException("Los datos a actualizar no pueden ser nulos");
-	    }
+    @Override
+    public int updateById(Long id, EmpleadoAdminDTO newData) {
 
-	    if (newData.getNombre() == null || newData.getNombre().isEmpty()) {
-	        throw new InvalidDataException("El nombre es obligatorio");
-	    }
+        Optional<EmpleadoAdmin> encontrado = empleadoAdminRepo.findById(id);
 
-	    if (newData.getEdad() <= 0) {
-	        throw new InvalidDataException("La edad debe ser válida");
-	    }
+        if (!encontrado.isPresent())
+            return 1;
 
-	    if (newData.getFechaInicio() == null) {
-	        throw new InvalidDataException("La fecha de inicio es obligatoria");
-	    }
+        try {
+            if (newData.getNombre() == null || newData.getNombre().isEmpty())
+                throw new InvalidDataException("");
 
-	    if (newData.getZonaAsignada() == null || newData.getZonaAsignada().isEmpty()) {
-	        throw new InvalidDataException("La zona asignada es obligatoria");
-	    }
-	    
-	    if (!newData.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
-	        throw new NombreException("El nombre solo puede contener letras y espacios");
-	    }
-	    
-	    if (newData.getEdad() < 0 || newData.getEdad() > 120) {
-	        throw new EdadException("La edad debe estar entre 0 y 120 años");
-	    }
-	    
-	    if (!newData.getZonaAsignada().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
-	        throw new ZonaAsignadaException("La zona asignada solo puede contener letras y espacios");
-	    }
+            if (newData.getEdad() <= 0)
+                throw new InvalidDataException("");
+
+            if (newData.getFechaInicio() == null)
+                throw new InvalidDataException("");
+
+            if (newData.getZonaAsignada() == null || newData.getZonaAsignada().isEmpty())
+                throw new InvalidDataException("");
+
+            if (!newData.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"))
+                throw new NombreException("");
+
+            if (newData.getEdad() < 0 || newData.getEdad() > 120)
+                throw new EdadException("");
+
+            if (!newData.getZonaAsignada().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$"))
+                throw new ZonaAsignadaException("");
+
+        } catch (NombreException e) {
+            return 2;
+        } catch (EdadException e) {
+            return 3;
+        } catch (ZonaAsignadaException e) {
+            return 4;
+        } catch (InvalidDataException e) {
+            return 5;
+        }
 
         EmpleadoAdmin temp = encontrado.get();
 
@@ -175,26 +144,15 @@ public class EmpleadoAdminService implements CRUDOperation<EmpleadoAdminDTO>{
 
         empleadoAdminRepo.save(temp);
         return 0;
-	}
+    }
 
-	/**
-	 * Cuenta los administradores registrados.
-	 * 
-	 * @return cantidad de administradores
-	 */
-	@Override
-	public long count() {
-		return empleadoAdminRepo.count();
-	}
+    @Override
+    public long count() {
+        return empleadoAdminRepo.count();
+    }
 
-	/**
-	 * Verifica si un administrador existe.
-	 * 
-	 * @param id identificador del administrador
-	 * @return true si existe, false si no
-	 */
-	@Override
-	public boolean exist(Long id) {
-		return empleadoAdminRepo.existsById(id) ? true : false;
-	}
+    @Override
+    public boolean exist(Long id) {
+        return empleadoAdminRepo.existsById(id);
+    }
 }
