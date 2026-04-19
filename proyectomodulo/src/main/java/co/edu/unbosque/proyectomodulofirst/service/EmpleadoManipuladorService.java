@@ -7,173 +7,207 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import co.edu.unbosque.proyectomodulofirst.dto.EmpleadoManipuladorDTO;
 import co.edu.unbosque.proyectomodulofirst.entity.EmpleadoManipulador;
 import co.edu.unbosque.proyectomodulofirst.entity.Paquete;
 import co.edu.unbosque.proyectomodulofirst.exception.EdadException;
 import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
-import co.edu.unbosque.proyectomodulofirst.exception.LanzadorDeExcepcion;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
+import co.edu.unbosque.proyectomodulofirst.exception.ResourceNotFoundException;
 import co.edu.unbosque.proyectomodulofirst.exception.TipoPaqueteException;
 import co.edu.unbosque.proyectomodulofirst.repository.EmpleadoManipuladorRepository;
 import co.edu.unbosque.proyectomodulofirst.repository.PaqueteRepository;
 
+/**
+ * Servicio encargado de la lógica de negocio para EmpleadoManipulador.
+ * Permite realizar operaciones CRUD, validaciones y control de paquetes asignados.
+ */
 @Service
-public class EmpleadoManipuladorService implements CRUDOperation<EmpleadoManipuladorDTO> {
+public class EmpleadoManipuladorService implements CRUDOperation<EmpleadoManipuladorDTO>{
+	
+	@Autowired
+	private EmpleadoManipuladorRepository empleadoManipuladorRepo;
 
-    @Autowired
-    private EmpleadoManipuladorRepository empleadoManipuladorRepo;
+	@Autowired
+	private PaqueteRepository paqueteRepo;
+	
+	@Autowired
+	private ModelMapper mapper;
+	
+	public EmpleadoManipuladorService() {
 
-    @Autowired
-    private PaqueteRepository paqueteRepo;
+	}
 
-    @Autowired
-    private ModelMapper mapper;
+	/**
+	 * Crea un nuevo manipulador con validaciones.
+	 * 
+	 * @param data datos del manipulador
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int create(EmpleadoManipuladorDTO data) {
+		
+		if (data == null) {
+	        throw new InvalidDataException("Los datos del manipulador no pueden ser nulos");
+	    }
 
-    public EmpleadoManipuladorService() {
-    }
+	    if (data.getNombre() == null || data.getNombre().isEmpty()) {
+	        throw new InvalidDataException("El nombre es obligatorio");
+	    }
 
-    // 0 - Creado exitosamente
-    // 1 - Nombre invalido
-    // 2 - Edad invalida
-    // 3 - Fecha inicio obligatoria
-    // 4 - Tipo paquete invalido
-    @Override
-    public int create(EmpleadoManipuladorDTO data) {
+	    if (data.getEdad() <= 0) {
+	        throw new InvalidDataException("La edad debe ser válida");
+	    }
 
-        try {
-            LanzadorDeExcepcion.verificarNombre(data.getNombre());
-            LanzadorDeExcepcion.verificarEdad(data.getEdad());
+	    if (data.getFechaInicio() == null) {
+	        throw new InvalidDataException("La fecha de inicio es obligatoria");
+	    }
 
-            if (data.getFechaInicio() == null) {
-                return 3;
-            }
+	    if (data.getTipoDePaquete() == null || data.getTipoDePaquete().isEmpty()) {
+	        throw new InvalidDataException("El tipo de paquete es obligatorio");
+	    }
 
-            LanzadorDeExcepcion.verificarTipoPaquete(data.getTipoDePaquete());
+	    if (!data.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new NombreException("El nombre solo puede contener letras y espacios");
+	    }
+	    
+	    if (data.getEdad() < 0 || data.getEdad() > 120) {
+	        throw new EdadException("La edad debe estar entre 0 y 120 años");
+	    }
+	    
+	    if (!data.getTipoDePaquete().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new TipoPaqueteException("El tipo de paquete solo puede contener letras y espacios");
+	    }
+	    
+		EmpleadoManipulador entity = new EmpleadoManipulador(data.getNombre(), data.getEdad(), data.getFechaInicio(), data.getTipoDePaquete());
+		empleadoManipuladorRepo.save(entity);
+		return 0;
+	}
 
-        } catch (NombreException e) {
-            return 1;
-        } catch (EdadException e) {
-            return 2;
-        } catch (TipoPaqueteException e) {
-            return 4;
-        }
-
-        empleadoManipuladorRepo.save(mapper.map(data, EmpleadoManipulador.class));
-        return 0;
-    }
-
-    @Override
-    public List<EmpleadoManipuladorDTO> getAll() {
-        List<EmpleadoManipulador> entityList =
-                (List<EmpleadoManipulador>) empleadoManipuladorRepo.findAll();
-
-        List<EmpleadoManipuladorDTO> dtoList = new ArrayList<>();
+	/**
+	 * Obtiene todos los manipuladores registrados.
+	 * 
+	 * @return lista de manipuladores
+	 */
+	@Override
+	public List<EmpleadoManipuladorDTO> getAll() {
+		List<EmpleadoManipulador> entityList = (List<EmpleadoManipulador>) empleadoManipuladorRepo.findAll();
+        
+		if (entityList.isEmpty()) {
+	        throw new ResourceNotFoundException("No hay administradores registrados");
+	    }
+		
+		List<EmpleadoManipuladorDTO> dtoList = new ArrayList<>();
 
         entityList.forEach((entidad) -> {
-            EmpleadoManipuladorDTO dto =
-                    mapper.map(entidad, EmpleadoManipuladorDTO.class);
+            EmpleadoManipuladorDTO dto = mapper.map(entidad, EmpleadoManipuladorDTO.class);
             dtoList.add(dto);
         });
 
         return dtoList;
-    }
+	}
 
-    // 0 - Eliminado exitosamente
-    // 1 - No encontrado
-    // 2 - Tiene paquetes asignados
-    // 3 - Id invalido
-    @Override
-    public int deleteById(Long id) {
+	/**
+	 * Elimina un manipulador validando que no tenga paquetes asignados.
+	 * 
+	 * @param id identificador del manipulador
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int deleteById(Long id) {
 
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 3;
-        }
+	    Optional<EmpleadoManipulador> encontrado = empleadoManipuladorRepo.findById(id);
 
-        Optional<EmpleadoManipulador> encontrado =
-                empleadoManipuladorRepo.findById(id);
+	    if (!encontrado.isPresent()) {
+	        throw new ResourceNotFoundException("Manipulador con id " + id + " no encontrado");
+	    }
 
-        if (encontrado.isPresent()) {
+	    List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
 
-            List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
+	    for (Paquete p : paquetes) {
+	    	if (p.getIdManipulador() == id) {
+	            throw new InvalidDataException(
+	                "No se puede eliminar el manipulador porque tiene paquetes asignados");
+	        }
+	    }
 
-            for (Paquete p : paquetes) {
-                if (p.getIdManipulador() == id) {
-                    return 2;
-                }
-            }
+	    empleadoManipuladorRepo.delete(encontrado.get());
+	    return 0;
+	}
 
-            empleadoManipuladorRepo.delete(encontrado.get());
-            return 0;
-        }
+	/**
+	 * Actualiza un manipulador por id.
+	 * 
+	 * @param id identificador del manipulador
+	 * @param newData nuevos datos
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int updateById(Long id, EmpleadoManipuladorDTO newData) {
+		Optional<EmpleadoManipulador> encontrado = empleadoManipuladorRepo.findById(id);
+		
+		if (!encontrado.isPresent()) {
+	        throw new ResourceNotFoundException("Manipulador con id " + id + " no encontrado");
+	    }
 
-        return 1;
-    }
+	    if (newData == null) {
+	        throw new InvalidDataException("Los datos a actualizar no pueden ser nulos");
+	    }
 
-    // 0 - Actualizado exitosamente
-    // 1 - No encontrado
-    // 2 - Nombre invalido
-    // 3 - Edad invalida
-    // 4 - Fecha inicio obligatoria
-    // 5 - Tipo paquete invalido
-    // 6 - Id invalido
-    @Override
-    public int updateById(Long id, EmpleadoManipuladorDTO newData) {
+	    if (newData.getNombre() == null || newData.getNombre().isEmpty()) {
+	        throw new InvalidDataException("El nombre es obligatorio");
+	    }
 
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 6;
-        }
+	    if (newData.getEdad() <= 0) {
+	        throw new InvalidDataException("La edad debe ser válida");
+	    }
 
-        Optional<EmpleadoManipulador> encontrado =
-                empleadoManipuladorRepo.findById(id);
+	    if (newData.getFechaInicio() == null) {
+	        throw new InvalidDataException("La fecha de inicio es obligatoria");
+	    }
 
-        if (encontrado.isPresent()) {
+	    if (newData.getTipoDePaquete() == null || newData.getTipoDePaquete().isEmpty()) {
+	        throw new InvalidDataException("El tipo de paquete es obligatorio");
+	    }
+	    
+	    if (!newData.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new NombreException("El nombre solo puede contener letras y espacios");
+	    }
+	    
+	    if (newData.getEdad() < 0 || newData.getEdad() > 120) {
+	        throw new EdadException("La edad debe estar entre 0 y 120 años");
+	    }
+	    
+	    if (!newData.getTipoDePaquete().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new TipoPaqueteException("El tipo de paquete solo puede contener letras y espacios");
+	    }
 
-            try {
-                LanzadorDeExcepcion.verificarNombre(newData.getNombre());
-                LanzadorDeExcepcion.verificarEdad(newData.getEdad());
+        EmpleadoManipulador temp = encontrado.get();
 
-                if (newData.getFechaInicio() == null) {
-                    return 4;
-                }
+        temp.setNombre(newData.getNombre());
 
-                LanzadorDeExcepcion.verificarTipoPaquete(
-                        newData.getTipoDePaquete());
+        empleadoManipuladorRepo.save(temp);
+        return 0;
+	}
 
-            } catch (NombreException e) {
-                return 2;
-            } catch (EdadException e) {
-                return 3;
-            } catch (TipoPaqueteException e) {
-                return 5;
-            }
+	/**
+	 * Cuenta los manipuladores registrados.
+	 * 
+	 * @return cantidad de manipuladores
+	 */
+	@Override
+	public long count() {
+		return empleadoManipuladorRepo.count();
+	}
 
-            EmpleadoManipulador temp = encontrado.get();
-
-            temp.setNombre(newData.getNombre());
-            temp.setEdad(newData.getEdad());
-            temp.setFechaInicio(newData.getFechaInicio());
-            temp.setTipoDePaquete(newData.getTipoDePaquete());
-
-            empleadoManipuladorRepo.save(temp);
-            return 0;
-        }
-
-        return 1;
-    }
-
-    @Override
-    public long count() {
-        return empleadoManipuladorRepo.count();
-    }
-
-    @Override
-    public boolean exist(Long id) {
-        return empleadoManipuladorRepo.existsById(id);
-    }
+	/**
+	 * Verifica si un manipulador existe.
+	 * 
+	 * @param id identificador del manipulador
+	 * @return true si existe, false si no
+	 */
+	@Override
+	public boolean exist(Long id) {
+		return empleadoManipuladorRepo.existsById(id) ? true : false;
+	}
 }

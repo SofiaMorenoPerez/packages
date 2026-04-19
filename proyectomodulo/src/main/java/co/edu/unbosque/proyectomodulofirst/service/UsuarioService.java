@@ -14,12 +14,16 @@ import co.edu.unbosque.proyectomodulofirst.entity.Usuario;
 import co.edu.unbosque.proyectomodulofirst.exception.CiudadException;
 import co.edu.unbosque.proyectomodulofirst.exception.DireccionException;
 import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
-import co.edu.unbosque.proyectomodulofirst.exception.LanzadorDeExcepcion;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
+import co.edu.unbosque.proyectomodulofirst.exception.ResourceNotFoundException;
 import co.edu.unbosque.proyectomodulofirst.exception.TelefonoException;
 import co.edu.unbosque.proyectomodulofirst.repository.PaqueteRepository;
 import co.edu.unbosque.proyectomodulofirst.repository.UsuarioRepository;
 
+/**
+ * Servicio encargado de la lógica de negocio para la entidad Usuario.
+ * Implementa operaciones CRUD con validaciones de negocio.
+ */
 @Service
 public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 
@@ -32,48 +36,78 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
     @Autowired
     private ModelMapper mapper;
 
-    public UsuarioService() {
+    /**
+     * Constructor vacío del servicio.
+     */
+    public UsuarioService() { 
+        
     }
 
-    // 0 - Creado exitosamente
-    // 1 - Nombre invalido
-    // 2 - Tipo de usuario obligatorio
-    // 3 - Ciudad invalida
-    // 4 - Direccion invalida
-    // 5 - Telefono invalido
+    /**
+     * Crea un nuevo usuario en el sistema validando sus datos.
+     * 
+     * @param data datos del usuario a registrar
+     * @return código de estado (0 si fue exitoso)
+     */
     @Override
     public int create(UsuarioDTO data) {
 
-        try {
-            LanzadorDeExcepcion.verificarNombre(data.getNombre());
+        if (data.getNombre() == null || data.getNombre().isEmpty()) {
+            throw new InvalidDataException("El nombre es obligatorio");
+        }
 
-            if (data.getTipo() == null) {
-                return 2;
-            }
+        if (data.getTipo() == null) {
+            throw new InvalidDataException("El tipo de usuario es obligatorio");
+        }
 
-            LanzadorDeExcepcion.verificarCiudad(data.getCiudad(), "ciudad");
-            LanzadorDeExcepcion.verificarDireccion(data.getDireccion(), "direccion");
-            LanzadorDeExcepcion.verificarTelefono(data.getTelefono());
+        if (data.getCiudad() == null || data.getCiudad().isEmpty()) {
+            throw new InvalidDataException("La ciudad es obligatoria");
+        }
 
-        } catch (NombreException e) {
-            return 1;
-        } catch (CiudadException e) {
-            return 3;
-        } catch (DireccionException e) {
-            return 4;
-        } catch (TelefonoException e) {
-            return 5;
+        if (data.getDireccion() == null || data.getDireccion().isEmpty()) {
+            throw new InvalidDataException("La dirección es obligatoria");
+        }
+
+        if (data.getTelefono() <= 0) {
+            throw new InvalidDataException("El teléfono debe ser válido");
+        }
+
+        if (!data.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            throw new NombreException("El nombre solo puede contener letras y espacios");
+        }
+
+        if (!data.getCiudad().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            throw new CiudadException("La ciudad solo puede contener letras y espacios");
+        }
+
+        if (!data.getDireccion().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z0-9 #\\-]+$")) {
+            throw new DireccionException(
+                "La dirección debe contener letras y números y no tener caracteres especiales"
+            );
+        }
+
+        if (!String.valueOf(data.getTelefono()).matches("^\\d{10}$")) {
+            throw new TelefonoException("El teléfono debe tener exactamente 10 números");
         }
 
         data.setTarifa(data.getTipo().getTarifa());
-        usuarioRepo.save(mapper.map(data, Usuario.class));
+        usuarioRepo.save((mapper.map(data, Usuario.class)));
         return 0;
     }
 
+    /**
+     * Obtiene todos los usuarios registrados.
+     * 
+     * @return lista de usuarios en formato DTO
+     */
     @Override
     public List<UsuarioDTO> getAll() {
-
         List<Usuario> entityList = (List<Usuario>) usuarioRepo.findAll();
+
+        if (entityList.isEmpty()) {
+            throw new ResourceNotFoundException("No hay usuarios registrados");
+        }
+
         List<UsuarioDTO> dtoList = new ArrayList<>();
 
         entityList.forEach((entidad) -> {
@@ -84,19 +118,14 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
         return dtoList;
     }
 
-    // 0 - Eliminado exitosamente
-    // 1 - No encontrado
-    // 2 - Id invalido
-    // 3 - Usuario con paquetes asociados
+    /**
+     * Elimina un usuario por su ID, validando que no tenga paquetes asociados.
+     * 
+     * @param id identificador del usuario
+     * @return código de estado (0 si fue exitoso)
+     */
     @Override
     public int deleteById(Long id) {
-
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 2;
-        }
-
         Optional<Usuario> encontrado = usuarioRepo.findById(id);
 
         if (encontrado.isPresent()) {
@@ -105,7 +134,8 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
 
             for (Paquete p : paquetes) {
                 if (p.getIdUsuario() == id) {
-                    return 3;
+                    throw new InvalidDataException(
+                        "No se puede eliminar el usuario porque tiene paquetes asociados");
                 }
             }
 
@@ -113,75 +143,90 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
             return 0;
         }
 
-        return 1;
+        throw new ResourceNotFoundException("Usuario no encontrado con id: " + id);
     }
 
-    // 0 - Actualizado exitosamente
-    // 1 - Id invalido
-    // 2 - No encontrado
-    // 3 - Nombre invalido
-    // 4 - Tipo obligatorio
-    // 5 - Ciudad invalida
-    // 6 - Direccion invalida
-    // 7 - Telefono invalido
+    /**
+     * Actualiza los datos de un usuario existente.
+     * 
+     * @param id identificador del usuario
+     * @param newData nuevos datos del usuario
+     * @return código de estado (0 si fue exitoso)
+     */
     @Override
     public int updateById(Long id, UsuarioDTO newData) {
+        Usuario usuario = usuarioRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
 
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 1;
+        // VALIDACIONES
+        if (newData.getNombre() == null || newData.getNombre().isEmpty()) {
+            throw new InvalidDataException("El nombre es obligatorio");
         }
 
-        Optional<Usuario> encontrado = usuarioRepo.findById(id);
-
-        if (encontrado.isPresent()) {
-
-            try {
-
-                LanzadorDeExcepcion.verificarNombre(newData.getNombre());
-
-                if (newData.getTipo() == null) {
-                    return 4;
-                }
-
-                LanzadorDeExcepcion.verificarCiudad(newData.getCiudad(), "ciudad");
-                LanzadorDeExcepcion.verificarDireccion(newData.getDireccion(), "direccion");
-                LanzadorDeExcepcion.verificarTelefono(newData.getTelefono());
-
-            } catch (NombreException e) {
-                return 3;
-            } catch (CiudadException e) {
-                return 5;
-            } catch (DireccionException e) {
-                return 6;
-            } catch (TelefonoException e) {
-                return 7;
-            }
-
-            Usuario temp = encontrado.get();
-
-            temp.setNombre(newData.getNombre());
-            temp.setTipo(newData.getTipo());
-            temp.setTarifa(newData.getTipo().getTarifa());
-            temp.setCiudad(newData.getCiudad());
-            temp.setDireccion(newData.getDireccion());
-            temp.setTelefono(newData.getTelefono());
-
-            usuarioRepo.save(temp);
-            return 0;
+        if (newData.getTipo() == null) {
+            throw new InvalidDataException("El tipo de usuario es obligatorio");
         }
 
-        return 2;
+        if (newData.getCiudad() == null || newData.getCiudad().isEmpty()) {
+            throw new InvalidDataException("La ciudad es obligatoria");
+        }
+
+        if (newData.getDireccion() == null || newData.getDireccion().isEmpty()) {
+            throw new InvalidDataException("La dirección es obligatoria");
+        }
+
+        if (newData.getTelefono() <= 0) {
+            throw new InvalidDataException("El teléfono debe ser válido");
+        }
+
+        if (!newData.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            throw new NombreException("El nombre solo puede contener letras y espacios");
+        }
+
+        if (!newData.getCiudad().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            throw new CiudadException("La ciudad solo puede contener letras y espacios");
+        }
+
+        if (!newData.getDireccion().matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z0-9 #\\-]+$")) {
+            throw new DireccionException(
+                "La dirección debe contener letras y números y no tener caracteres especiales"
+            );
+        }
+
+        if (!String.valueOf(newData.getTelefono()).matches("^\\d{10}$")) {
+            throw new TelefonoException("El teléfono debe tener exactamente 10 números");
+        }
+
+        usuario.setNombre(newData.getNombre());
+        usuario.setTipo(newData.getTipo());
+        usuario.setTarifa(newData.getTipo().getTarifa());
+        usuario.setCiudad(newData.getCiudad());
+        usuario.setDireccion(newData.getDireccion());
+        usuario.setTelefono(newData.getTelefono());
+
+        usuarioRepo.save(usuario);
+
+        return 0;
     }
 
+    /**
+     * Cuenta la cantidad total de usuarios registrados.
+     * 
+     * @return número de usuarios
+     */
     @Override
     public long count() {
         return usuarioRepo.count();
     }
 
+    /**
+     * Verifica si un usuario existe por su ID.
+     * 
+     * @param id identificador del usuario
+     * @return true si existe, false en caso contrario
+     */
     @Override
     public boolean exist(Long id) {
-        return usuarioRepo.existsById(id);
+        return usuarioRepo.existsById(id) ? true : false;
     }
 }

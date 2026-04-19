@@ -13,60 +13,98 @@ import co.edu.unbosque.proyectomodulofirst.entity.EmpleadoConductor;
 import co.edu.unbosque.proyectomodulofirst.entity.Paquete;
 import co.edu.unbosque.proyectomodulofirst.exception.EdadException;
 import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
-import co.edu.unbosque.proyectomodulofirst.exception.LanzadorDeExcepcion;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
+import co.edu.unbosque.proyectomodulofirst.exception.ResourceNotFoundException;
 import co.edu.unbosque.proyectomodulofirst.exception.TipoVehiculoException;
 import co.edu.unbosque.proyectomodulofirst.repository.EmpleadoConductorRepository;
 import co.edu.unbosque.proyectomodulofirst.repository.PaqueteRepository;
 
+/**
+ * Servicio encargado de la lógica de negocio para EmpleadoConductor.
+ * Permite realizar operaciones CRUD, validaciones y control de paquetes asignados.
+ */
 @Service
-public class EmpleadoConductorService implements CRUDOperation<EmpleadoConductorDTO> {
+public class EmpleadoConductorService implements CRUDOperation<EmpleadoConductorDTO>{
+	
+	@Autowired
+	private EmpleadoConductorRepository empleadoConductorRepo;
+	
+	@Autowired
+	private PaqueteRepository paqueteRepo;
+	
+	@Autowired
+	private ModelMapper mapper;
 
-    @Autowired
-    private EmpleadoConductorRepository empleadoConductorRepo;
+	public EmpleadoConductorService() {
 
-    @Autowired
-    private PaqueteRepository paqueteRepo;
+	}
 
-    @Autowired
-    private ModelMapper mapper;
+	/**
+	 * Crea un nuevo conductor con validaciones.
+	 * 
+	 * @param data datos del conductor
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int create(EmpleadoConductorDTO data) {
+		
+		if (data == null) {
+	        throw new InvalidDataException("Los datos del conductor no pueden ser nulos");
+	    }
 
-    public EmpleadoConductorService() {
-    }
+	    if (data.getNombre() == null || data.getNombre().isEmpty()) {
+	        throw new InvalidDataException("El nombre es obligatorio");
+	    }
 
-    // 0 - Creado exitosamente
-    // 1 - Nombre invalido
-    // 2 - Edad invalida
-    // 3 - Fecha inicio obligatoria
-    // 4 - Tipo vehiculo invalido
-    @Override
-    public int create(EmpleadoConductorDTO data) {
+	    if (data.getEdad() <= 0) {
+	        throw new InvalidDataException("La edad debe ser válida");
+	    }
 
-        try {
-            LanzadorDeExcepcion.verificarNombre(data.getNombre());
-            LanzadorDeExcepcion.verificarEdad(data.getEdad());
+	    if (data.getFechaInicio() == null) {
+	        throw new InvalidDataException("La fecha de inicio es obligatoria");
+	    }
 
-            if (data.getFechaInicio() == null) {
-                return 3;
-            }
+	    if (data.getTipoVehiculo() == null || data.getTipoVehiculo().isEmpty()) {
+	        throw new InvalidDataException("El tipo de vehículo es obligatorio");
+	    }
+	    
+	    if (!data.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new NombreException("El nombre solo puede contener letras y espacios");
+	    }
+	    
+	    if (data.getEdad() < 0 || data.getEdad() > 120) {
+	        throw new EdadException("La edad debe estar entre 0 y 120 años");
+	    }
+	    
+	    if (!data.getTipoVehiculo().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new TipoVehiculoException("El tipo de vehículo solo puede contener letras y espacios");
+	    }
 
-            LanzadorDeExcepcion.verificarTipoVehiculo(data.getTipoVehiculo());
+	    EmpleadoConductor conductor = new EmpleadoConductor();
 
-        } catch (NombreException e) {
-            return 1;
-        } catch (EdadException e) {
-            return 2;
-        } catch (TipoVehiculoException e) {
-            return 4;
-        }
+	    conductor.setNombre(data.getNombre());
+	    conductor.setEdad(data.getEdad());
+	    conductor.setFechaInicio(data.getFechaInicio());
+	    conductor.setTipoVehiculo(data.getTipoVehiculo());
 
-        empleadoConductorRepo.save(mapper.map(data, EmpleadoConductor.class));
-        return 0;
-    }
+	    empleadoConductorRepo.save(conductor);
 
-    @Override
-    public List<EmpleadoConductorDTO> getAll() {
-        List<EmpleadoConductor> entityList = (List<EmpleadoConductor>) empleadoConductorRepo.findAll();
+	    return 0;
+	}
+
+	/**
+	 * Obtiene todos los conductores registrados.
+	 * 
+	 * @return lista de conductores
+	 */
+	@Override
+	public List<EmpleadoConductorDTO> getAll() {
+		List<EmpleadoConductor> entityList = (List<EmpleadoConductor>) empleadoConductorRepo.findAll();
+		
+		if (entityList.isEmpty()) {
+	        throw new ResourceNotFoundException("No hay administradores registrados");
+	    }
+		
         List<EmpleadoConductorDTO> dtoList = new ArrayList<>();
 
         entityList.forEach((entidad) -> {
@@ -75,99 +113,111 @@ public class EmpleadoConductorService implements CRUDOperation<EmpleadoConductor
         });
 
         return dtoList;
-    }
+	}
 
-    // 0 - Eliminado exitosamente
-    // 1 - No encontrado
-    // 2 - Tiene paquetes asignados
-    // 3 - Id invalido
-    @Override
-    public int deleteById(Long id) {
+	/**
+	 * Elimina un conductor validando que no tenga paquetes asignados.
+	 * 
+	 * @param id identificador del conductor
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int deleteById(Long id) {
+		Optional<EmpleadoConductor> encontrado = empleadoConductorRepo.findById(id);
 
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 3;
-        }
+	    if (!encontrado.isPresent()) {
+	    	throw new ResourceNotFoundException("Usuario con id " + id + " no encontrado");
+	    }
 
-        Optional<EmpleadoConductor> encontrado = empleadoConductorRepo.findById(id);
+	    List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
 
-        if (encontrado.isPresent()) {
+    	for (Paquete p : paquetes) {
+    	    if (p.getIdConductor() == id) {
+    	    	throw new InvalidDataException(
+    	                "No se puede eliminar el conductor porque tiene paquetes asignados");
+    	    }
+    	}
 
-            List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
+	    empleadoConductorRepo.delete(encontrado.get());
+	    return 0;
+	}
 
-            for (Paquete p : paquetes) {
-                if (p.getIdConductor() == id) {
-                    return 2;
-                }
-            }
+	/**
+	 * Actualiza un conductor por id.
+	 * 
+	 * @param id identificador del conductor
+	 * @param newData nuevos datos
+	 * @return resultado de la operación
+	 */
+	@Override
+	public int updateById(Long id, EmpleadoConductorDTO newData) {
+		Optional<EmpleadoConductor> encontrado = empleadoConductorRepo.findById(id);
+		
+		if (!encontrado.isPresent()) {
+	        throw new ResourceNotFoundException("Conductor con id " + id + " no encontrado");
+	    }
 
-            empleadoConductorRepo.delete(encontrado.get());
-            return 0;
-        }
+	    if (newData == null) {
+	        throw new InvalidDataException("Los datos a actualizar no pueden ser nulos");
+	    }
 
-        return 1;
-    }
+	    if (newData.getNombre() == null || newData.getNombre().isEmpty()) {
+	        throw new InvalidDataException("El nombre es obligatorio");
+	    }
 
-    // 0 - Actualizado exitosamente
-    // 1 - No encontrado
-    // 2 - Nombre invalido
-    // 3 - Edad invalida
-    // 4 - Fecha inicio obligatoria
-    // 5 - Tipo vehiculo invalido
-    // 6 - Id invalido
-    @Override
-    public int updateById(Long id, EmpleadoConductorDTO newData) {
+	    if (newData.getEdad() <= 0) {
+	        throw new InvalidDataException("La edad debe ser válida");
+	    }
 
-        try {
-            LanzadorDeExcepcion.verificarIdNegativo(id);
-        } catch (InvalidDataException e) {
-            return 6;
-        }
+	    if (newData.getFechaInicio() == null) {
+	        throw new InvalidDataException("La fecha de inicio es obligatoria");
+	    }
 
-        Optional<EmpleadoConductor> encontrado = empleadoConductorRepo.findById(id);
+	    if (newData.getTipoVehiculo() == null || newData.getTipoVehiculo().isEmpty()) {
+	        throw new InvalidDataException("El tipo de vehículo es obligatorio");
+	    }
+	    
+	    if (!newData.getNombre().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new NombreException("El nombre solo puede contener letras y espacios");
+	    }
+	    
+	    if (newData.getEdad() < 0 || newData.getEdad() > 120) {
+	        throw new EdadException("La edad debe estar entre 0 y 120 años");
+	    }
+	    
+	    if (!newData.getTipoVehiculo().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+	        throw new TipoVehiculoException("El tipo de vehículo solo puede contener letras y espacios");
+	    }
 
-        if (encontrado.isPresent()) {
+        EmpleadoConductor temp = encontrado.get();
 
-            try {
-                LanzadorDeExcepcion.verificarNombre(newData.getNombre());
-                LanzadorDeExcepcion.verificarEdad(newData.getEdad());
+        temp.setNombre(newData.getNombre());
+        temp.setEdad(newData.getEdad());
+        temp.setFechaInicio(newData.getFechaInicio());
+        temp.setTipoVehiculo(newData.getTipoVehiculo());
 
-                if (newData.getFechaInicio() == null) {
-                    return 4;
-                }
+        empleadoConductorRepo.save(temp);
+        return 0;
+	}
 
-                LanzadorDeExcepcion.verificarTipoVehiculo(newData.getTipoVehiculo());
+	/**
+	 * Cuenta los conductores registrados.
+	 * 
+	 * @return cantidad de conductores
+	 */
+	@Override
+	public long count() {
+		return empleadoConductorRepo.count();
+	}
 
-            } catch (NombreException e) {
-                return 2;
-            } catch (EdadException e) {
-                return 3;
-            } catch (TipoVehiculoException e) {
-                return 5;
-            }
-
-            EmpleadoConductor temp = encontrado.get();
-
-            temp.setNombre(newData.getNombre());
-            temp.setEdad(newData.getEdad());
-            temp.setFechaInicio(newData.getFechaInicio());
-            temp.setTipoVehiculo(newData.getTipoVehiculo());
-
-            empleadoConductorRepo.save(temp);
-            return 0;
-        }
-
-        return 1;
-    }
-
-    @Override
-    public long count() {
-        return empleadoConductorRepo.count();
-    }
-
-    @Override
-    public boolean exist(Long id) {
-        return empleadoConductorRepo.existsById(id);
-    }
+	/**
+	 * Verifica si un conductor existe.
+	 * 
+	 * @param id identificador del conductor
+	 * @return true si existe, false si no
+	 */
+	@Override
+	public boolean exist(Long id) {
+		return empleadoConductorRepo.existsById(id) ? true : false;
+	}
 }
