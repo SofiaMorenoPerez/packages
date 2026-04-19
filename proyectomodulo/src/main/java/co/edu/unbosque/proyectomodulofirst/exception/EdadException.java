@@ -1,16 +1,8 @@
 package co.edu.unbosque.proyectomodulofirst.exception;
 
-/**
- * Excepción personalizada para errores relacionados con la edad.
- */
-public class EdadException extends RuntimeException {
+public class EdadException extends Exception {
 
-    /**
-     * Constructor que recibe el mensaje de error.
-     * 
-     * @param mensaje descripción del error
-     */
-    public EdadException(String mensaje) {
-        super(mensaje);
+    public EdadException() {
+        super("La edad ingresada no es válida");
     }
 }

@@ -1,6 +1,7 @@
 package co.edu.unbosque.proyectomodulofirst.controller;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import co.edu.unbosque.proyectomodulofirst.dto.UsuarioDTO;
 import co.edu.unbosque.proyectomodulofirst.enums.TipoDeUsuario;
 import co.edu.unbosque.proyectomodulofirst.service.UsuarioService;
 
 /**
  * Controlador REST para gestionar los usuarios del sistema.
- * Expone endpoints para crear, obtener, actualizar y eliminar usuarios.
  */
 @RestController
 @RequestMapping("/usuario")
@@ -29,84 +30,113 @@ public class UsuarioController {
     private UsuarioService usuarioServ;
 
     /**
-     * Crea un nuevo usuario con los datos proporcionados.
-     *
-     * @param nombre nombre del usuario
-     * @param tipo tipo de usuario según el enum TipoDeUsuario
-     * @param ciudad ciudad de residencia del usuario
-     * @param direccion dirección del usuario
-     * @param telefono número de teléfono del usuario
-     * @return respuesta con mensaje de éxito o error según el resultado
+     * Crea un nuevo usuario.
      */
     @PostMapping("/crear")
-    public ResponseEntity<String> crearUsuario(@RequestParam String nombre, @RequestParam TipoDeUsuario tipo,
-            @RequestParam String ciudad, @RequestParam String direccion, @RequestParam long telefono) {
+    public ResponseEntity<String> crearUsuario(
+            @RequestParam String nombre,
+            @RequestParam TipoDeUsuario tipo,
+            @RequestParam String ciudad,
+            @RequestParam String direccion,
+            @RequestParam long telefono) {
+
         UsuarioDTO nuevo = new UsuarioDTO(nombre, tipo, ciudad, direccion, telefono);
+
         int status = usuarioServ.create(nuevo);
+
         if (status == 0) {
-            return new ResponseEntity<String>("Usuario creado con exito", HttpStatus.CREATED);
+            return new ResponseEntity<>("Usuario creado con exito", HttpStatus.CREATED);
+        } else if (status == 1) {
+            return new ResponseEntity<>("El nombre ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("El tipo de usuario es obligatorio", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("La ciudad ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("La direccion ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 5) {
+            return new ResponseEntity<>("El telefono ingresado no es valido", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al crear usuario", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al crear usuario", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Obtiene la lista de todos los usuarios registrados.
-     *
-     * @return lista de usuarios con estado HTTP correspondiente
+     * Obtiene todos los usuarios.
      */
     @GetMapping("/mostrartodo")
     public ResponseEntity<List<UsuarioDTO>> obtenerTodo() {
+
         List<UsuarioDTO> usuarioLista = usuarioServ.getAll();
+
         if (usuarioLista.isEmpty()) {
-            return new ResponseEntity<List<UsuarioDTO>>(usuarioLista, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<List<UsuarioDTO>>(usuarioLista, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(usuarioLista, HttpStatus.NO_CONTENT);
         }
+
+        return new ResponseEntity<>(usuarioLista, HttpStatus.OK);
     }
 
     /**
-     * Actualiza los datos de un usuario existente según su ID.
-     *
-     * @param id identificador del usuario a actualizar
-     * @param nombre nuevo nombre del usuario
-     * @param tipo nuevo tipo de usuario según el enum TipoDeUsuario
-     * @param ciudad nueva ciudad de residencia del usuario
-     * @param direccion nueva dirección del usuario
-     * @param telefono nuevo número de teléfono del usuario
-     * @return respuesta con mensaje de éxito o error según el resultado
+     * Actualiza un usuario existente.
      */
     @PutMapping("/actualizar")
-    public ResponseEntity<String> actualizarUsuario(@RequestParam Long id, @RequestParam String nombre,
-            @RequestParam TipoDeUsuario tipo, @RequestParam String ciudad,
-            @RequestParam String direccion, @RequestParam long telefono) {
+    public ResponseEntity<String> actualizarUsuario(
+            @RequestParam Long id,
+            @RequestParam String nombre,
+            @RequestParam TipoDeUsuario tipo,
+            @RequestParam String ciudad,
+            @RequestParam String direccion,
+            @RequestParam long telefono) {
+
         UsuarioDTO nuevo = new UsuarioDTO();
         nuevo.setNombre(nombre);
         nuevo.setTipo(tipo);
         nuevo.setCiudad(ciudad);
         nuevo.setDireccion(direccion);
         nuevo.setTelefono(telefono);
+
         int status = usuarioServ.updateById(id, nuevo);
+
         if (status == 0) {
-            return new ResponseEntity<String>("Usuario actualizado con exito", HttpStatus.CREATED);
+            return new ResponseEntity<>("Usuario actualizado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("El id ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("Usuario no encontrado con id: " + id, HttpStatus.NOT_FOUND);
+        } else if (status == 3) {
+            return new ResponseEntity<>("El nombre ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("El tipo de usuario es obligatorio", HttpStatus.BAD_REQUEST);
+        } else if (status == 5) {
+            return new ResponseEntity<>("La ciudad ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 6) {
+            return new ResponseEntity<>("La direccion ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 7) {
+            return new ResponseEntity<>("El telefono ingresado no es valido", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al actualizar usuario", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al actualizar usuario", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Elimina un usuario según su ID.
-     *
-     * @param id identificador del usuario a eliminar
-     * @return respuesta con mensaje de éxito o error según el resultado
+     * Elimina un usuario.
      */
     @DeleteMapping("/eliminar")
     public ResponseEntity<String> eliminarUsuario(@RequestParam Long id) {
+
         int status = usuarioServ.deleteById(id);
+
         if (status == 0) {
-            return new ResponseEntity<String>("Usuario eliminado con exito", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Usuario eliminado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("Usuario no encontrado con id: " + id, HttpStatus.NOT_FOUND);
+        } else if (status == 2) {
+            return new ResponseEntity<>("El id ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("No se puede eliminar el usuario porque tiene paquetes asociados",
+                    HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al eliminar usuario", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al eliminar usuario", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

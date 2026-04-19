@@ -16,10 +16,6 @@ import co.edu.unbosque.proyectomodulofirst.dto.PaqueteDTO;
 import co.edu.unbosque.proyectomodulofirst.enums.TipoDePaquete;
 import co.edu.unbosque.proyectomodulofirst.service.PaqueteService;
 
-/**
- * Controlador REST para gestionar los paquetes del sistema.
- * Expone endpoints para crear, obtener, actualizar y eliminar paquetes.
- */
 @RestController
 @RequestMapping("/paquete")
 @CrossOrigin(origins = {"http://localhost:8081", "*"})
@@ -28,86 +24,101 @@ public class PaqueteController {
     @Autowired
     private PaqueteService paqueteServ;
 
-    /**
-     * Crea un nuevo paquete con los datos proporcionados.
-     *
-     * @param idUsuario identificador del usuario que envía el paquete
-     * @param idConductor identificador del conductor asignado al paquete
-     * @param idManipulador identificador del manipulador asignado al paquete
-     * @param ciudadDeOrigen ciudad de origen del paquete
-     * @param ciudadDeDestino ciudad de destino del paquete
-     * @param direccionDeOrigen dirección de origen del paquete
-     * @param direccionDeDestino dirección de destino del paquete
-     * @param tipo tipo de paquete según el enum TipoDePaquete
-     * @param peso peso del paquete en kilogramos
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @PostMapping("/crear")
-    public ResponseEntity<String> crearPaquete(@RequestParam long idUsuario, @RequestParam long idConductor,
-            @RequestParam long idManipulador, @RequestParam String ciudadDeOrigen,
-            @RequestParam String ciudadDeDestino, @RequestParam String direccionDeOrigen,
-            @RequestParam String direccionDeDestino, @RequestParam TipoDePaquete tipo,
+    public ResponseEntity<String> crearPaquete(
+            @RequestParam long idUsuario,
+            @RequestParam long idConductor,
+            @RequestParam long idManipulador,
+            @RequestParam String ciudadDeOrigen,
+            @RequestParam String ciudadDeDestino,
+            @RequestParam String direccionDeOrigen,
+            @RequestParam String direccionDeDestino,
+            @RequestParam TipoDePaquete tipo,
             @RequestParam double peso) {
-        PaqueteDTO nuevo = new PaqueteDTO(idUsuario, idConductor, idManipulador, ciudadDeOrigen,
-                ciudadDeDestino, direccionDeDestino, direccionDeDestino, tipo, peso);
+
+        PaqueteDTO nuevo = new PaqueteDTO(idUsuario, idConductor, idManipulador,
+                ciudadDeOrigen, ciudadDeDestino, direccionDeOrigen, direccionDeDestino, tipo, peso);
+
         int status = paqueteServ.create(nuevo);
+
         if (status == 0) {
-            return new ResponseEntity<String>("Paquete creado con exito", HttpStatus.CREATED);
+            return new ResponseEntity<>("Paquete creado con exito", HttpStatus.CREATED);
+        } else if (status == 1) {
+            return new ResponseEntity<>("El tipo de paquete es obligatorio", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("El peso debe ser mayor a 0", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("La ciudad ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("La ciudad de destino no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 5) {
+            return new ResponseEntity<>("La direccion ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 6) {
+            return new ResponseEntity<>("La direccion de destino no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 7) {
+            return new ResponseEntity<>("El id ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 8) {
+            return new ResponseEntity<>("El usuario no existe", HttpStatus.NOT_FOUND);
+        } else if (status == 9) {
+            return new ResponseEntity<>("El conductor no existe", HttpStatus.NOT_FOUND);
+        } else if (status == 10) {
+            return new ResponseEntity<>("El manipulador no existe", HttpStatus.NOT_FOUND);
+        } else if (status == 11) {
+            return new ResponseEntity<>("El conductor ya tiene un paquete en proceso", HttpStatus.BAD_REQUEST);
+        } else if (status == 12) {
+            return new ResponseEntity<>("El manipulador ya tiene un paquete en proceso", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al crear paquete", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al crear paquete", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Obtiene la lista de todos los paquetes registrados.
-     *
-     * @return lista de paquetes con estado HTTP correspondiente
-     */
     @GetMapping("/mostrartodo")
     public ResponseEntity<List<PaqueteDTO>> obtenerTodo() {
         List<PaqueteDTO> paqueteLista = paqueteServ.getAll();
         if (paqueteLista.isEmpty()) {
-            return new ResponseEntity<List<PaqueteDTO>>(paqueteLista, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<List<PaqueteDTO>>(paqueteLista, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(paqueteLista, HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(paqueteLista, HttpStatus.OK);
     }
 
-    /**
-     * Actualiza la ciudad y dirección de destino de un paquete existente según su ID.
-     *
-     * @param id identificador del paquete a actualizar
-     * @param ciudadDeDestino nueva ciudad de destino del paquete
-     * @param direccionDeDestino nueva dirección de destino del paquete
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @PutMapping("/actualizar")
-    public ResponseEntity<String> actualizarPaquete(@RequestParam Long id,
-            @RequestParam String ciudadDeDestino, @RequestParam String direccionDeDestino) {
+    public ResponseEntity<String> actualizarPaquete(
+            @RequestParam Long id,
+            @RequestParam String ciudadDeDestino,
+            @RequestParam String direccionDeDestino) {
+
         PaqueteDTO nuevo = new PaqueteDTO();
         nuevo.setCiudadDeDestino(ciudadDeDestino);
         nuevo.setDireccionDeDestino(direccionDeDestino);
+
         int status = paqueteServ.updateById(id, nuevo);
+
         if (status == 0) {
-            return new ResponseEntity<String>("Paquete actualizado con exito", HttpStatus.CREATED);
+            return new ResponseEntity<>("Paquete actualizado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("El id del paquete es invalido", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("La ciudad de destino no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("La direccion de destino no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("Paquete no encontrado con id: " + id, HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<String>("Error al actualizar paquete", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al actualizar paquete", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Elimina un paquete según su ID.
-     *
-     * @param id identificador del paquete a eliminar
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @DeleteMapping("/eliminarpaquete")
     public ResponseEntity<String> eliminarPaquete(@RequestParam Long id) {
         int status = paqueteServ.deleteById(id);
         if (status == 0) {
-            return new ResponseEntity<String>("Paquete eliminado con exito", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Paquete eliminado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("Paquete con id " + id + " no encontrado", HttpStatus.NOT_FOUND);
+        } else if (status == 2) {
+            return new ResponseEntity<>("El id ingresado no es valido", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al eliminar paquete", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al eliminar paquete", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -1,16 +1,8 @@
 package co.edu.unbosque.proyectomodulofirst.exception;
 
-/**
- * Excepción personalizada para errores relacionados con datos inválidos.
- */
-public class InvalidDataException extends RuntimeException{
-	
-    /**
-     * Constructor que recibe el mensaje de error.
-     * 
-     * @param mensaje descripción del error
-     */
-    public InvalidDataException(String mensaje) {
-        super(mensaje);
+public class InvalidDataException extends Exception {
+
+    public InvalidDataException() {
+        super("El dato ingresado no es válido");
     }
 }

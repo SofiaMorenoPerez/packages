@@ -1,16 +1,8 @@
 package co.edu.unbosque.proyectomodulofirst.exception;
 
-/**
- * Excepción personalizada para errores relacionados con la ciudad.
- */
-public class CiudadException extends RuntimeException {
+public class CiudadException extends Exception {
 
-    /**
-     * Constructor que recibe el mensaje de error.
-     * 
-     * @param mensaje descripción del error
-     */
-    public CiudadException(String mensaje) {
-        super(mensaje);
+    public CiudadException() {
+        super("La ciudad ingresada no es válida");
     }
 }
