@@ -5,21 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import co.edu.unbosque.proyectomodulofirst.dto.EmpleadoConductorDTO;
 import co.edu.unbosque.proyectomodulofirst.service.EmpleadoConductorService;
 
-/**
- * Controlador REST para gestionar los empleados conductores.
- * Expone endpoints para crear, obtener, actualizar y eliminar conductores.
- */
 @RestController
 @RequestMapping("/conductor")
 @CrossOrigin(origins = {"http://localhost:8081", "*"})
@@ -28,15 +17,6 @@ public class EmpleadoConductorController {
     @Autowired
     private EmpleadoConductorService empleadoConductorServ;
 
-    /**
-     * Crea un nuevo empleado conductor con los datos proporcionados.
-     *
-     * @param nombre nombre del conductor
-     * @param edad edad del conductor
-     * @param fechaInicio fecha de inicio del conductor
-     * @param tipoVehiculo tipo de vehículo asignado al conductor
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @PostMapping("/crearconductor")
     public ResponseEntity<String> crearConductor(@RequestParam String nombre, @RequestParam int edad,
             @RequestParam LocalDateTime fechaInicio, @RequestParam String tipoVehiculo) {
@@ -44,36 +24,28 @@ public class EmpleadoConductorController {
         int status = empleadoConductorServ.create(nuevo);
         if (status == 0) {
             return new ResponseEntity<>("Conductor creado correctamente", HttpStatus.CREATED);
+        } else if (status == 1) {
+            return new ResponseEntity<>("La fecha de inicio es obligatoria", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("El nombre ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("La edad ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("El tipo de vehiculo ingresado no es valido", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<>("No se pudo crear el conductor ", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al crear conductor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Obtiene la lista de todos los empleados conductores registrados.
-     *
-     * @return lista de conductores con estado HTTP correspondiente
-     */
     @GetMapping("/mostrartodo")
     public ResponseEntity<List<EmpleadoConductorDTO>> obtenerTodo() {
         List<EmpleadoConductorDTO> lista = empleadoConductorServ.getAll();
         if (lista.isEmpty()) {
-            return new ResponseEntity<List<EmpleadoConductorDTO>>(lista, HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<List<EmpleadoConductorDTO>>(lista, HttpStatus.ACCEPTED);
+            return new ResponseEntity<>(lista, HttpStatus.NO_CONTENT);
         }
+        return new ResponseEntity<>(lista, HttpStatus.OK);
     }
 
-    /**
-     * Actualiza los datos de un empleado conductor existente según su ID.
-     *
-     * @param id identificador del conductor a actualizar
-     * @param nombre nuevo nombre del conductor
-     * @param edad nueva edad del conductor
-     * @param fechaInicio nueva fecha de inicio del conductor
-     * @param tipoVehiculo nuevo tipo de vehículo asignado al conductor
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @PutMapping("/actualizarconductor")
     public ResponseEntity<String> actualizarConductor(@RequestParam Long id, @RequestParam String nombre,
             @RequestParam int edad, @RequestParam LocalDateTime fechaInicio,
@@ -85,25 +57,33 @@ public class EmpleadoConductorController {
         nuevo.setTipoVehiculo(tipoVehiculo);
         int status = empleadoConductorServ.updateById(id, nuevo);
         if (status == 0) {
-            return new ResponseEntity<String>("Conductor actualizado con exito", HttpStatus.CREATED);
+            return new ResponseEntity<>("Conductor actualizado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("Conductor no encontrado con id: " + id, HttpStatus.NOT_FOUND);
+        } else if (status == 2) {
+            return new ResponseEntity<>("La fecha de inicio es obligatoria", HttpStatus.BAD_REQUEST);
+        } else if (status == 3) {
+            return new ResponseEntity<>("El nombre ingresado no es valido", HttpStatus.BAD_REQUEST);
+        } else if (status == 4) {
+            return new ResponseEntity<>("La edad ingresada no es valida", HttpStatus.BAD_REQUEST);
+        } else if (status == 5) {
+            return new ResponseEntity<>("El tipo de vehiculo ingresado no es valido", HttpStatus.BAD_REQUEST);
         } else {
-            return new ResponseEntity<String>("Error al actualizar conductor", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al actualizar conductor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    /**
-     * Elimina un empleado conductor según su ID.
-     *
-     * @param id identificador del conductor a eliminar
-     * @return respuesta con mensaje de éxito o error según el resultado
-     */
     @DeleteMapping("/eliminarconductor")
     public ResponseEntity<String> eliminarConductor(@RequestParam Long id) {
         int status = empleadoConductorServ.deleteById(id);
         if (status == 0) {
-            return new ResponseEntity<String>("Conductor eliminado con exito", HttpStatus.ACCEPTED);
+            return new ResponseEntity<>("Conductor eliminado con exito", HttpStatus.OK);
+        } else if (status == 1) {
+            return new ResponseEntity<>("No se puede eliminar el conductor porque tiene paquetes asignados", HttpStatus.BAD_REQUEST);
+        } else if (status == 2) {
+            return new ResponseEntity<>("Conductor no encontrado con id: " + id, HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<String>("Error al eliminar conductor", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error al eliminar conductor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
