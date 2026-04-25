@@ -10,6 +10,9 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -23,24 +26,40 @@
     "JavaScript Debug.index.html.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "E:/ProyectoModuloFront",
+    "last_opened_file_path": "C:/Users/sofia/OneDrive/Documentos/packages/ProyectoModuloFront",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
+    "nodejs_interpreter_path": "C:/Users/sofia/OneDrive/Documentos/DESARROLLO WEB/node-v22.20.0-win-x64/node-v22.20.0-win-x64/node",
     "nodejs_package_manager_path": "npm",
     "npm.run.executor": "Run",
     "npm.star.executor": "Run",
     "npm.start.executor": "Run",
+    "settings.editor.selected.configurable": "settings.nodejs",
     "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "D:\\ProyectoModuloFront\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "C:\\Users\\sofia\\OneDrive\\Documentos\\packages\\ProyectoModuloFront\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="npm.Angular CLI Server">
+    <configuration name="Angular Application" type="JavascriptDebugType" uri="http://localhost:4200">
+      <method v="2" />
+    </configuration>
+    <configuration name="Angular CLI Server" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
     <configuration name="start" type="js.build_tools.npm" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="start" />
@@ -66,6 +85,7 @@
       <workItem from="1776651264978" duration="10959000" />
       <workItem from="1776888708083" duration="1631000" />
       <workItem from="1777079437584" duration="5637000" />
+      <workItem from="1777142893351" duration="183000" />
     </task>
     <servers />
   </component>
