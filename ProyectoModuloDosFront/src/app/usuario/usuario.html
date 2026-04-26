@@ -1,1 +1,81 @@
-<p>usuario works!</p>
+<div class="container">
+  <h2 class="titulo">{{ modoEdicion ? 'Editar Usuario' : 'Registrar Usuario' }}</h2>
+
+  <div class="campo">
+    <label>Nombre</label>
+    <input type="text" [(ngModel)]="nombre" placeholder="Ej. Juan Pérez" />
+  </div>
+
+  <div class="campo">
+    <label>Tipo de Usuario</label>
+    <select [(ngModel)]="tipo">
+      <option value="">— Seleccionar —</option>
+      <option *ngFor="let t of tiposUsuario" [value]="t">{{ t }}</option>
+    </select>
+  </div>
+
+  <div class="campo">
+    <label>Ciudad</label>
+    <input type="text" [(ngModel)]="ciudad" placeholder="Ej. Bogotá" />
+  </div>
+
+  <div class="campo">
+    <label>Dirección</label>
+    <input type="text" [(ngModel)]="direccion" placeholder="Ej. Cra 7 #45-23" />
+  </div>
+
+  <div class="campo">
+    <label>Teléfono</label>
+    <input type="number" [(ngModel)]="telefono" placeholder="Ej. 3001234567" />
+  </div>
+
+  <button class="btn-guardar" (click)="guardar()">{{ modoEdicion ? 'Actualizar' : 'Guardar' }}</button>
+  <button class="btn-cancelar" (click)="limpiarFormulario()" *ngIf="modoEdicion">Cancelar</button>
+
+  <hr class="separador" />
+
+  <h2 class="titulo">Lista de Usuarios</h2>
+
+  <table class="tabla">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Tipo</th>
+      <th>Tarifa</th>
+      <th>Ciudad</th>
+      <th>Dirección</th>
+      <th>Teléfono</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let u of usuariosLista">
+      <td>{{ u.id }}</td>
+      <td>{{ u.nombre }}</td>
+      <td>{{ u.tipo }}</td>
+      <td>{{ u.tarifa | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+      <td>{{ u.ciudad }}</td>
+      <td>{{ u.direccion }}</td>
+      <td>{{ u.telefono }}</td>
+      <td>
+        <button class="btn-editar" (click)="editar(u)">Editar</button>
+        <button class="btn-eliminar" (click)="eliminar(u.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="usuarioToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header" [ngStyle]="{'background-color': toastColor}">
+        <strong class="me-auto">{{ toastTitulo }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ toastMensaje }}
+      </div>
+    </div>
+  </div>
+
+</div>

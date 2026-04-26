@@ -101,16 +101,5 @@
     </div>
   </div>
 
-  <!-- TOAST -->
-  <div class="toast-container position-fixed bottom-0 end-0 p-3">
-    <div id="manipuladorToast" class="toast" role="alert">
-      <div class="toast-header" [ngClass]="toastTipo === 'success' ? 'bg-success text-white' : 'bg-danger text-white'">
-        <strong class="me-auto">{{ toastTipo === 'success' ? '✅ Éxito' : '❌ Error' }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
-      </div>
-      <div class="toast-body">
-        {{ toastMensaje }}
-      </div>
-    </div>
-  </div>
+
 </div>

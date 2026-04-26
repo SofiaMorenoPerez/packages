@@ -1,0 +1,178 @@
+.container {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.titulo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 1.4rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid #f0f0f5;
+}
+
+.mensaje {
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  background: #e6faf4;
+  color: #0a7a55;
+  border-left: 3px solid #00c896;
+}
+
+.separador {
+  border: none;
+  border-top: 1.5px solid #f0f0f5;
+  margin: 2rem 0;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1rem;
+}
+
+.campo label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #888;
+}
+
+.campo input,
+.campo select {
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid #e4e4ef;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1a1a2e;
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #00c896;
+  box-shadow: 0 0 0 3px rgba(0, 200, 150, 0.08);
+  background: #fff;
+}
+
+.btn-guardar {
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  margin-right: 0.5rem;
+  background: #00c896;
+  color: #fff;
+}
+
+.btn-guardar:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.btn-cancelar {
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: #f0f0f5;
+  color: #555;
+}
+
+.btn-cancelar:hover {
+  background: #e4e4ef;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  margin-top: 1rem;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tabla thead {
+  background: #f5f5fb;
+}
+
+.tabla thead th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+  border-bottom: 1.5px solid #ececf5;
+}
+
+.tabla tbody tr {
+  border-bottom: 1px solid #f2f2f8;
+  transition: background 0.12s;
+}
+
+.tabla tbody tr:hover {
+  background: #fafafe;
+}
+
+.tabla tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabla tbody td {
+  padding: 0.85rem 1rem;
+  color: #1a1a2e;
+  vertical-align: middle;
+}
+
+.btn-editar {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.4rem;
+  font-weight: 700;
+  background: #eef0ff;
+  color: #4a4acf;
+  transition: background 0.15s;
+}
+
+.btn-editar:hover {
+  background: #dde0ff;
+}
+
+.btn-eliminar {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  background: rgba(232, 64, 64, 0.08);
+  color: #e84040;
+  transition: background 0.15s;
+}
+
+.btn-eliminar:hover {
+  background: rgba(232, 64, 64, 0.15);
+}
