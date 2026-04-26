@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-paquete',
@@ -6,4 +7,11 @@ import { Component } from '@angular/core';
   templateUrl: './paquete.html',
   styleUrl: './paquete.css',
 })
-export class Paquete {}
+export class Paquete {
+
+  constructor(private router: Router) {}
+
+  irPaquete() {
+    this.router.navigate(['/paquete']);
+  }
+}
