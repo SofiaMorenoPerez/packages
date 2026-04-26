@@ -151,16 +151,7 @@ export class Usuario implements OnInit {
 
 
 
-  editar(u: UsuarioModel): void {
-    this.modoEdicion = true;
-    this.idEditando = u.id;
-    this.nombre = u.nombre;
-    this.tipo = u.tipo as TipoUsuario;
-    this.ciudad = u.ciudad;
-    this.direccion = u.direccion;
-    this.telefono = u.telefono;
-    this.vista = 'editar';
-  }
+
 
   eliminar(id: number): void {
     this.usuarioService.delete(id).subscribe({

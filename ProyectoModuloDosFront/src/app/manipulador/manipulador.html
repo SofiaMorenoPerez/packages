@@ -10,6 +10,9 @@
     <button class="btn-opcion" [class.activo]="vista === 'paquetes'" (click)="cambiarVista('paquetes')">
       <i class="fa-solid fa-box-open"></i> Paquetes Activos
     </button>
+    <button class="btn-opcion" [class.activo]="vista === 'eliminar'" (click)="cambiarVista('eliminar')">
+      <i class="fa-solid fa-trash-can"></i> Eliminar cuenta
+    </button>
   </div>
 
   <hr class="separador" />
@@ -37,6 +40,24 @@
       <i class="fa-solid fa-floppy-disk"></i> Guardar
     </button>
   </div>
+
+  <!-- Eliminar -->
+
+  <div *ngIf="vista === 'eliminar'">
+    <h2 class="titulo">Eliminar cuenta</h2>
+
+    <div class="campo">
+      <label>ID del Usuario</label>
+      <input type="number" [(ngModel)]="idBuscar" placeholder="Ej. 4" />
+    </div>
+    <button class="btn-eliminar" (click)="buscarPorIdYEliminar()">
+      <i class="fa-solid fa-trash"></i> Eliminar
+    </button>
+  </div>
+
+
+
+
 
   <!-- EDITAR -->
   <div *ngIf="vista === 'editar'">

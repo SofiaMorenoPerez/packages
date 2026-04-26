@@ -26,7 +26,7 @@ export class Manipulador implements OnInit {
 
   nombre: string = '';
   edad: number = 0;
-  fechaInicio: string = '';
+  fechaInicio: string = new Date().toISOString().slice(0, 16);
   tipoDePaquete: string = '';
 
   modoEdicion: boolean = false;
@@ -101,6 +101,17 @@ export class Manipulador implements OnInit {
     }
   }
 
+
+  buscarPorIdYEliminar(): void {
+    const encontrado = this.manipuladoresLista.find(u => u.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.eliminar(encontrado.id);
+    } else {
+      this.mostrarToast(`No se encontró manipulador con ID ${this.idBuscar}`, false);
+    }
+  }
+
+
   guardar(): void {
     if (this.modoEdicion) {
       this.manipuladorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
@@ -129,15 +140,6 @@ export class Manipulador implements OnInit {
     }
   }
 
-  editar(m: ManipuladorModel): void {
-    this.modoEdicion = true;
-    this.idEditando = m.id!;
-    this.nombre = m.nombre;
-    this.edad = m.edad;
-    this.fechaInicio = m.fechaInicio;
-    this.tipoDePaquete = m.tipoDePaquete;
-    this.vista = 'editar';
-  }
 
   eliminar(id: number): void {
     this.manipuladorService.delete(id).subscribe({
@@ -155,7 +157,7 @@ export class Manipulador implements OnInit {
   limpiarFormulario(): void {
     this.nombre = '';
     this.edad = 0;
-    this.fechaInicio = '';
+    this.fechaInicio = new Date().toISOString().slice(0, 16);
     this.tipoDePaquete = '';
     this.modoEdicion = false;
     this.idEditando = 0;
