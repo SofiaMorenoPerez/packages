@@ -1,5 +1,8 @@
 <div class="container">
 
+  <h1>"Te damos la bienvenida, a continuación encontraras opciones
+    escoga la que se adecue al servicio que requiere"</h1>
+
   <div class="opciones-row">
     <button class="btn-opcion" [class.activo]="vista === 'registrar'" (click)="cambiarVista('registrar')">
       <i class="fa-solid fa-user-plus"></i> Registrar Usuario
@@ -8,11 +11,12 @@
       <i class="fa-solid fa-user-pen"></i> Editar Usuario
     </button>
     <button class="btn-opcion" [class.activo]="vista === 'paquetes'" (click)="cambiarVista('paquetes')">
-      <i class="fa-solid fa-box-open"></i> Paquetes Activos
+      <i class="fa-solid fa-boxes-stacked"></i> Paquetes Activos
     </button>
-    <button class="btn-opcion" routerLink="/paquete">
-      <i class="fa-solid fa-box-open"></i> Crear Paquetes
-    </button>
+    <a class="btn-opcion" routerLink="/paquete">
+      <i class="fa-solid fa-box-open"></i>  Crear Paquete
+    </a>
+
   </div>
 
   <hr class="separador" />
