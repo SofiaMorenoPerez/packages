@@ -18,15 +18,24 @@
     <h2 class="titulo">Crear Envío</h2>
     <div class="campo">
       <label>ID Usuario</label>
-      <input type="number" [(ngModel)]="idUsuario" placeholder="Ej. 1" />
+      <select [(ngModel)]="idUsuario">
+        <option value="0">Seleccione un usuario...</option>
+        <option *ngFor="let u of usuariosLista" [value]="u.id">{{ u.id }} - {{ u.nombre }}</option>
+      </select>
     </div>
     <div class="campo">
       <label>ID Conductor</label>
-      <input type="number" [(ngModel)]="idConductor" placeholder="Ej. 1" />
+      <select [(ngModel)]="idConductor">
+        <option value="0">Seleccione un conductor...</option>
+        <option *ngFor="let c of conductoresLista" [value]="c.id">{{ c.id }} - {{ c.nombre }}</option>
+      </select>
     </div>
     <div class="campo">
       <label>ID Manipulador</label>
-      <input type="number" [(ngModel)]="idManipulador" placeholder="Ej. 1" />
+      <select [(ngModel)]="idManipulador">
+        <option value="0">Seleccione un manipulador...</option>
+        <option *ngFor="let m of manipuladoresLista" [value]="m.id">{{ m.id }} - {{ m.nombre }}</option>
+      </select>
     </div>
     <div class="campo">
       <label>Tipo de Paquete</label>

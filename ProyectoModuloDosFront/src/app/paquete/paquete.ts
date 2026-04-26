@@ -2,6 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { PaqueteService } from '../services/paquete.service';
 import { PaqueteModel } from '../models/paquete.model';
 import { TipoPaquete } from '../models/tipo.paquete';
+import { UsuarioService } from '../services/usuario.service';
+import { ConductorService } from '../services/conductor.service';
+import { ManipuladorService } from '../services/manipulador.service';
+import { UsuarioModel } from '../models/usuario.model';
+import { ConductorModel } from '../models/conductor.model';
+import { ManipuladorModel } from '../models/manipulador.model';
 
 declare var bootstrap: any;
 
@@ -13,7 +19,13 @@ declare var bootstrap: any;
 })
 export class Paquete implements OnInit {
   private paqueteService = inject(PaqueteService);
+  private usuarioService = inject(UsuarioService);
+  private conductorService = inject(ConductorService);
+  private manipuladorService = inject(ManipuladorService);
 
+  usuariosLista: UsuarioModel[] = [];
+  conductoresLista: ConductorModel[] = [];
+  manipuladoresLista: ManipuladorModel[] = [];
   paquetesLista: PaqueteModel[] = [];
   paquetesUsuario: PaqueteModel[] = [];
 
@@ -59,6 +71,29 @@ export class Paquete implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista();
+    this.cargarUsuarios();
+    this.cargarConductores();
+    this.cargarManipuladores();
+  }
+  cargarUsuarios(): void {
+    this.usuarioService.getAll().subscribe({
+      next: (response) => { this.usuariosLista = response; },
+      error: () => { this.mostrarToast('Error al cargar usuarios', false); }
+    });
+  }
+
+  cargarConductores(): void {
+    this.conductorService.getAll().subscribe({
+      next: (response) => { this.conductoresLista = response; },
+      error: () => { this.mostrarToast('Error al cargar conductores', false); }
+    });
+  }
+
+  cargarManipuladores(): void {
+    this.manipuladorService.getAll().subscribe({
+      next: (response) => { this.manipuladoresLista = response; },
+      error: () => { this.mostrarToast('Error al cargar manipuladores', false); }
+    });
   }
 
   onTipoChange(): void {
