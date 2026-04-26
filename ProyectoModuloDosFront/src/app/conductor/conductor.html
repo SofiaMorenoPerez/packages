@@ -1,1 +1,116 @@
-<p>conductor works!</p>
+<div class="container mt-4">
+  <div class="card shadow">
+    <div class="card-header text-white">
+      <h2 class="mb-0">Empleados Conductores</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- FORMULARIO CREAR -->
+      <h4 class="mt-2">Crear Conductor</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="nombre">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Edad</label>
+          <input type="number" class="form-control" [(ngModel)]="edad">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="datetime-local" class="form-control" [(ngModel)]="fechaInicio">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Tipo de Vehículo</label>
+          <input type="text" class="form-control" [(ngModel)]="tipoVehiculo">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-success w-100" (click)="crear()">Crear</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- FORMULARIO EDITAR -->
+      <h4>Editar Conductor</h4>
+      <div class="row g-3 mb-4">
+        <div class="col-md-1">
+          <label class="form-label">ID</label>
+          <input type="number" class="form-control" [(ngModel)]="idEditar">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="nombreEditar">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Edad</label>
+          <input type="number" class="form-control" [(ngModel)]="edadEditar">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Fecha Inicio</label>
+          <input type="datetime-local" class="form-control" [(ngModel)]="fechaInicioEditar">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">Tipo de Vehículo</label>
+          <input type="text" class="form-control" [(ngModel)]="tipoVehiculoEditar">
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+          <button class="btn btn-warning w-100" (click)="actualizar()">Editar</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- TABLA -->
+      <h4>Lista de Conductores</h4>
+      <p class="text-muted small">Status Code: {{ statuscode }}</p>
+      <div class="table-responsive">
+        <table class="table table-striped table-hover border">
+          <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Edad</th>
+            <th>Fecha Inicio</th>
+            <th>Tipo de Vehículo</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+            @for (conductor of conductores; track conductor.id) {
+              <tr>
+                <td>{{ conductor.id }}</td>
+                <td>{{ conductor.nombre }}</td>
+                <td>{{ conductor.edad }}</td>
+                <td>{{ conductor.fechaInicio }}</td>
+                <td>{{ conductor.tipoVehiculo }}</td>
+                <td>
+                  <button class="btn btn-sm btn-warning me-2" (click)="seleccionarEditar(conductor)">Editar</button>
+                  <button class="btn btn-sm btn-danger" (click)="eliminar(conductor.id!)">Eliminar</button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center py-3 text-muted">No se encontraron conductores.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="conductorToast" class="toast" role="alert">
+      <div class="toast-header" [ngClass]="toastTipo === 'success' ? 'bg-success text-white' : 'bg-danger text-white'">
+        <strong class="me-auto">{{ toastTipo === 'success' ? '✅ Éxito' : '❌ Error' }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+      </div>
+      <div class="toast-body">
+        {{ toastMensaje }}
+      </div>
+    </div>
+  </div>
+</div>
