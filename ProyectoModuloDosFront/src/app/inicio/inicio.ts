@@ -14,5 +14,13 @@ export class Inicio {
 
   constructor() {}
 
+  ngOnInit() {
+    const toastEl = document.getElementById('liveToast');
+    if (toastEl) {
+      const toast = (window as any).bootstrap.Toast.getOrCreateInstance(toastEl);
+      toast.show();
+    }
+  }
+
 }
 
