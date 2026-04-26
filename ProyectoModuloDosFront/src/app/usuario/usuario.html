@@ -59,7 +59,9 @@
       <td>{{ u.direccion }}</td>
       <td>{{ u.telefono }}</td>
       <td>
-        <button class="btn-editar" (click)="editar(u)">Editar</button>
+        <button class="btn-editar" (click)="editar(u)">
+          <i class="pi pi-pencil" style="font-size: 2rem"></i>
+        </button>
         <button class="btn-eliminar" (click)="eliminar(u.id)">Eliminar</button>
       </td>
     </tr>
