@@ -11,7 +11,6 @@ const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   { path: 'inicio', component: Inicio },
   { path: 'usuario', component: Usuario },
-  { path: '', component: Inicio },
   { path: 'crear-envio', component: Crearenvio }
 ];
 
