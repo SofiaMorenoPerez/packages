@@ -11,3 +11,8 @@ button {
   margin-bottom: 20px;
 }
 
+.pagina {
+  background-color: #f6de93;
+  min-height: 100vh;
+}
+
