@@ -1,56 +1,106 @@
 <div class="container mt-4">
-  <h1>Cree su Envio</h1>
+  <h1>{{ modoEdicion ? 'Editar Envío' : 'Cree su Envio' }}</h1>
 
   <table class="table table-striped-columns">
     <tbody>
     <tr>
       <td><label>ID Usuario</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Usuario" [(ngModel)]="envio.idUsuario"></td>
+      <td><input type="number" class="form-control" placeholder="ID Usuario" [(ngModel)]="idUsuario"></td>
       <td><label>ID Conductor</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Conductor" [(ngModel)]="envio.idConductor"></td>
+      <td><input type="number" class="form-control" placeholder="ID Conductor" [(ngModel)]="idConductor"></td>
     </tr>
     <tr>
       <td><label>ID Manipulador</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Manipulador" [(ngModel)]="envio.idManipulador"></td>
+      <td><input type="number" class="form-control" placeholder="ID Manipulador" [(ngModel)]="idManipulador"></td>
       <td><label>Tipo de Paquete</label></td>
       <td>
-        <select class="form-control" [(ngModel)]="envio.tipo">
-          <option value="">Seleccione...</option>
-          <option value="ALIMENTICIO">Alimenticio</option>
-          <option value="NO_ALIMENTICIO">No alimenticio</option>
-          <option value="CARTA">Carta</option>
+        <select class="form-control" [(ngModel)]="tipo">
+          <option *ngFor="let t of tiposDePaquete" [value]="t">{{ t }}</option>
         </select>
       </td>
     </tr>
     <tr>
       <td><label>Ciudad de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de origen" [(ngModel)]="envio.ciudadDeOrigen"></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de origen" [(ngModel)]="ciudadDeOrigen"></td>
       <td><label>Ciudad de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="envio.ciudadDeDestino"></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="ciudadDeDestino"></td>
     </tr>
     <tr>
       <td><label>Dirección de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de origen" [(ngModel)]="envio.direccionDeOrigen"></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de origen" [(ngModel)]="direccionDeOrigen"></td>
       <td><label>Dirección de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="envio.direccionDeDestino"></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="direccionDeDestino"></td>
     </tr>
     <tr>
       <td><label>Fecha de Envío</label></td>
-      <td><input type="datetime-local" class="form-control" [(ngModel)]="envio.fechaEnvio"></td>
+      <td><input type="datetime-local" class="form-control" [(ngModel)]="fechaEnvio"></td>
       <td><label>Peso (kg)</label></td>
-      <td><input type="number" class="form-control" placeholder="Peso" [(ngModel)]="envio.peso"></td>
+      <td><input type="number" class="form-control" placeholder="Peso" [(ngModel)]="peso"></td>
     </tr>
     <tr>
       <td><label>Máximo de Horas</label></td>
-      <td><input type="number" class="form-control" placeholder="Max horas" [(ngModel)]="envio.maxHoras"></td>
+      <td><input type="number" class="form-control" placeholder="Max horas" [(ngModel)]="maxHoras"></td>
       <td><label>Tiempo</label></td>
-      <td><input type="number" class="form-control" placeholder="Tiempo" [(ngModel)]="envio.tiempo"></td>
+      <td><input type="number" class="form-control" placeholder="Tiempo" [(ngModel)]="tiempo"></td>
     </tr>
     </tbody>
   </table>
 
-  <button class="btn btn-primary" (click)="paquete()">Crear Envío</button>
+  <button type="button" class="btn btn-success" (click)="guardar()">{{ modoEdicion ? 'Actualizar' : 'Crear Envío' }}</button>
+  <button type="button" class="btn btn-secondary ms-2" (click)="limpiarFormulario()" *ngIf="modoEdicion">Cancelar</button>
+
+  <hr/>
 
   <h1>Obtenga información sobre su paquete</h1>
+
+  <table class="table table-striped mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>ID Usuario</th>
+      <th>ID Conductor</th>
+      <th>ID Manipulador</th>
+      <th>Ciudad Origen</th>
+      <th>Ciudad Destino</th>
+      <th>Dirección Origen</th>
+      <th>Dirección Destino</th>
+      <th>Tipo</th>
+      <th>Peso</th>
+      <th>Max Horas</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let p of paquetesLista">
+      <td>{{ p.id }}</td>
+      <td>{{ p.idUsuario }}</td>
+      <td>{{ p.idConductor }}</td>
+      <td>{{ p.idManipulador }}</td>
+      <td>{{ p.ciudadDeOrigen }}</td>
+      <td>{{ p.ciudadDeDestino }}</td>
+      <td>{{ p.direccionDeOrigen }}</td>
+      <td>{{ p.direccionDeDestino }}</td>
+      <td>{{ p.tipo }}</td>
+      <td>{{ p.peso }}</td>
+      <td>{{ p.maxHoras }}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" (click)="editar(p)">Editar</button>
+        <button class="btn btn-danger btn-sm" (click)="eliminar(p.id)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="paqueteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header" [ngStyle]="{'background-color': toastColor}">
+        <strong class="me-auto">{{ toastTitulo }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ toastMensaje }}
+      </div>
+    </div>
+  </div>
 
 </div>
