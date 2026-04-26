@@ -53,6 +53,16 @@ export class Paquete implements OnInit {
     this.cargarLista();
   }
 
+  onTipoChange(): void {
+    if (this.tipo === TipoPaquete.ALIMENTICIO) {
+      this.maxHoras = 4;
+    } else if (this.tipo === TipoPaquete.NO_ALIMENTICIO) {
+      this.maxHoras = 24;
+    } else if (this.tipo === TipoPaquete.CARTA) {
+      this.maxHoras = 72;
+    }
+  }
+
   cargarLista(): void {
     this.paqueteService.getAll().subscribe({
       next: (response) => {

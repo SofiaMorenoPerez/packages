@@ -3,46 +3,51 @@
 
   <table class="table table-striped-columns">
     <tbody>
-    <tr>
-      <td><label>ID Usuario</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Usuario" [(ngModel)]="idUsuario"></td>
-      <td><label>ID Conductor</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Conductor" [(ngModel)]="idConductor"></td>
-    </tr>
-    <tr>
-      <td><label>ID Manipulador</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Manipulador" [(ngModel)]="idManipulador"></td>
-      <td><label>Tipo de Paquete</label></td>
-      <td>
-        <select class="form-control" [(ngModel)]="tipo">
-          <option *ngFor="let t of tiposDePaquete" [value]="t">{{ t }}</option>
-        </select>
-      </td>
-    </tr>
-    <tr>
-      <td><label>Ciudad de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de origen" [(ngModel)]="ciudadDeOrigen"></td>
-      <td><label>Ciudad de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="ciudadDeDestino"></td>
-    </tr>
-    <tr>
-      <td><label>Dirección de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de origen" [(ngModel)]="direccionDeOrigen"></td>
-      <td><label>Dirección de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="direccionDeDestino"></td>
-    </tr>
-    <tr>
-      <td><label>Fecha de Envío</label></td>
-      <td><input type="datetime-local" class="form-control" [(ngModel)]="fechaEnvio"></td>
-      <td><label>Peso (kg)</label></td>
-      <td><input type="number" class="form-control" placeholder="Peso" [(ngModel)]="peso"></td>
-    </tr>
-    <tr>
-      <td><label>Máximo de Horas</label></td>
-      <td><input type="number" class="form-control" placeholder="Max horas" [(ngModel)]="maxHoras"></td>
-      <td><label>Tiempo</label></td>
-      <td><input type="number" class="form-control" placeholder="Tiempo" [(ngModel)]="tiempo"></td>
-    </tr>
+    <ng-container *ngIf="!modoEdicion">
+      <tr>
+        <td><label>ID Usuario</label></td>
+        <td><input type="number" class="form-control" placeholder="ID Usuario" [(ngModel)]="idUsuario"></td>
+        <td><label>ID Conductor</label></td>
+        <td><input type="number" class="form-control" placeholder="ID Conductor" [(ngModel)]="idConductor"></td>
+      </tr>
+      <tr>
+        <td><label>ID Manipulador</label></td>
+        <td><input type="number" class="form-control" placeholder="ID Manipulador" [(ngModel)]="idManipulador"></td>
+        <td><label>Tipo de Paquete</label></td>
+        <td>
+          <select class="form-control" [(ngModel)]="tipo" (change)="onTipoChange()">
+            <option *ngFor="let t of tiposDePaquete" [value]="t">{{ t }}</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><label>Ciudad de Origen</label></td>
+        <td><input type="text" class="form-control" placeholder="Ciudad de origen" [(ngModel)]="ciudadDeOrigen"></td>
+        <td><label>Ciudad de Destino</label></td>
+        <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="ciudadDeDestino"></td>
+      </tr>
+      <tr>
+        <td><label>Dirección de Origen</label></td>
+        <td><input type="text" class="form-control" placeholder="Dirección de origen" [(ngModel)]="direccionDeOrigen"></td>
+        <td><label>Dirección de Destino</label></td>
+        <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="direccionDeDestino"></td>
+      </tr>
+      <tr>
+        <td><label>Fecha de Envío</label></td>
+        <td><input type="datetime-local" class="form-control" [(ngModel)]="fechaEnvio"></td>
+        <td><label>Peso (kg)</label></td>
+        <td><input type="number" class="form-control" placeholder="Peso" [(ngModel)]="peso"></td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="modoEdicion">
+      <tr>
+        <td><label>Ciudad de Destino</label></td>
+        <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="ciudadDeDestino"></td>
+        <td><label>Dirección de Destino</label></td>
+        <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="direccionDeDestino"></td>
+      </tr>
+    </ng-container>
     </tbody>
   </table>
 
