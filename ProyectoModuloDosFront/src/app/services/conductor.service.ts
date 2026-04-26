@@ -7,10 +7,12 @@ import { ConductorModel } from '../models/conductor.model';
 })
 export class ConductorService {
   private cliente = inject(HttpClient);
-  private readonly urlbase: string = 'http://localhost:8080';
+  private readonly urlbase: string = 'http://localhost:8081';
 
   getAll() {
-    return this.cliente.get<ConductorModel[]>(this.urlbase + '/conductor/mostrartodo', { observe: 'response' });
+    return this.cliente.get<ConductorModel[]>(this.urlbase + '/conductor/mostrartodo', {
+      observe: 'response',
+    });
   }
 
   create(nombre: string, edad: number, fechaInicio: string, tipoVehiculo: string) {
@@ -19,7 +21,9 @@ export class ConductorService {
       `&edad=${edad}` +
       `&fechaInicio=${encodeURIComponent(fechaInicio)}` +
       `&tipoVehiculo=${encodeURIComponent(tipoVehiculo)}`;
-    return this.cliente.post(this.urlbase + '/conductor/crearconductor?' + params, null, { responseType: 'text' });
+    return this.cliente.post(this.urlbase + '/conductor/crearconductor?' + params, null, {
+      responseType: 'text',
+    });
   }
 
   update(id: number, nombre: string, edad: number, fechaInicio: string, tipoVehiculo: string) {
@@ -29,10 +33,14 @@ export class ConductorService {
       `&edad=${edad}` +
       `&fechaInicio=${encodeURIComponent(fechaInicio)}` +
       `&tipoVehiculo=${encodeURIComponent(tipoVehiculo)}`;
-    return this.cliente.put(this.urlbase + '/conductor/actualizar?' + params, null, { responseType: 'text' });
+    return this.cliente.put(this.urlbase + '/conductor/actualizarconductor?' + params, null, {
+      responseType: 'text',
+    });
   }
 
   delete(id: number) {
-    return this.cliente.delete(this.urlbase + '/conductor/eliminar?id=' + id, { responseType: 'text' });
+    return this.cliente.delete(this.urlbase + '/conductor/eliminarconductor?id=' + id, {
+      responseType: 'text',
+    });
   }
 }
