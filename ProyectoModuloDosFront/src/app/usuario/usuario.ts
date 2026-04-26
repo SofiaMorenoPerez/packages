@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { UsuarioService } from '../services/usuario.service';
+import { PaqueteService } from '../services/paquete.service';
 import { UsuarioModel } from '../models/usuario.model';
+import { PaqueteModel } from '../models/paquete.model';
 import { TipoUsuario } from '../models/tipo.usuario';
 
 declare var bootstrap: any;
@@ -13,13 +15,15 @@ declare var bootstrap: any;
 })
 export class Usuario implements OnInit {
   private usuarioService = inject(UsuarioService);
+  private paqueteService = inject(PaqueteService);
 
   usuariosLista: UsuarioModel[] = [];
+  paquetesLista: PaqueteModel[] = [];
+  paquetesUsuario: PaqueteModel[] = [];
 
   vista: string = 'registrar';
   idBuscar: number = 0;
   usuarioEncontrado: UsuarioModel | null = null;
-  paquetesUsuario: any[] = [];
 
   nombre: string = '';
   tipo: TipoUsuario = TipoUsuario.NORMAL;
@@ -39,7 +43,7 @@ export class Usuario implements OnInit {
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#9fdfb8' : '#ee9fb7';
+    this.toastColor = exito ? '#3fcd76' : '#c40505';
     setTimeout(() => {
       const toastEl = document.getElementById('usuarioToast');
       const toast = new bootstrap.Toast(toastEl);
@@ -49,23 +53,26 @@ export class Usuario implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista();
+    this.cargarPaquetes();
   }
 
   cargarLista(): void {
     this.usuarioService.getAll().subscribe({
-      next: (response) => {
-        this.usuariosLista = response;
-      },
-      error: () => {
-        this.mostrarToast('Error al cargar la lista', false);
-      },
+      next: (response) => { this.usuariosLista = response; },
+      error: () => { this.mostrarToast('Error al cargar usuarios', false); },
+    });
+  }
+
+  cargarPaquetes(): void {
+    this.paqueteService.getAll().subscribe({
+      next: (response) => { this.paquetesLista = response; },
+      error: () => { this.paquetesLista = []; },
     });
   }
 
   buscarPorId(): void {
     const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
     if (encontrado) {
-      this.usuarioEncontrado = encontrado;
       this.modoEdicion = true;
       this.idEditando = encontrado.id;
       this.nombre = encontrado.nombre;
@@ -73,6 +80,7 @@ export class Usuario implements OnInit {
       this.ciudad = encontrado.ciudad;
       this.direccion = encontrado.direccion;
       this.telefono = encontrado.telefono;
+      this.usuarioEncontrado = encontrado;
     } else {
       this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
     }
@@ -82,7 +90,7 @@ export class Usuario implements OnInit {
     const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
     if (encontrado) {
       this.usuarioEncontrado = encontrado;
-      this.paquetesUsuario = (encontrado as any).paquetes || [];
+      this.paquetesUsuario = this.paquetesLista.filter(p => p.idUsuario === Number(this.idBuscar));
     } else {
       this.usuarioEncontrado = null;
       this.paquetesUsuario = [];
@@ -127,6 +135,15 @@ export class Usuario implements OnInit {
             this.mostrarToast(msg, false);
           },
         });
+    }
+  }
+
+  buscarPorIdYEditar(): void {
+    const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.editar(encontrado);
+    } else {
+      this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
     }
   }
 

@@ -1,6 +1,5 @@
 <div class="container">
 
-  <!-- ── OPCIONES ── -->
   <div class="opciones-row">
     <button class="btn-opcion" [class.activo]="vista === 'registrar'" (click)="cambiarVista('registrar')">
       <i class="fa-solid fa-user-plus"></i> Registrar Usuario
@@ -18,7 +17,6 @@
   <!-- ── REGISTRAR ── -->
   <div *ngIf="vista === 'registrar'">
     <h2 class="titulo">Registrar Usuario</h2>
-
     <div class="campo">
       <label>Nombre</label>
       <input type="text" [(ngModel)]="nombre" placeholder="Ej. Juan Pérez" />
@@ -62,7 +60,6 @@
 
     <div *ngIf="modoEdicion">
       <div class="edit-bar">✏️ Editando ID: <strong>{{ idEditando }}</strong></div>
-
       <div class="campo">
         <label>Nombre</label>
         <input type="text" [(ngModel)]="nombre" placeholder="Ej. Juan Pérez" />
@@ -96,7 +93,7 @@
 
   <!-- ── PAQUETES ── -->
   <div *ngIf="vista === 'paquetes'">
-    <h2 class="titulo">Paquetes Activos</h2>
+    <h2 class="titulo">Paquetes por Usuario</h2>
 
     <div class="campo">
       <label>ID del Usuario</label>
@@ -106,30 +103,43 @@
       <i class="fa-solid fa-magnifying-glass"></i> Buscar
     </button>
 
-    <div *ngIf="usuarioEncontrado" class="edit-bar" style="margin-top: 1rem">
-      👤 Usuario: <strong>{{ usuarioEncontrado.nombre }}</strong> —
-      Tipo: <strong>{{ usuarioEncontrado.tipo }}</strong>
+    <div class="edit-bar" *ngIf="usuarioEncontrado" style="margin-top: 1rem">
+      👤 <strong>{{ usuarioEncontrado.nombre }}</strong> —
+      Tipo: <strong>{{ usuarioEncontrado.tipo }}</strong> —
+      Tarifa: <strong>{{ usuarioEncontrado.tarifa | currency:'COP':'symbol-narrow':'1.0-0' }}</strong>
     </div>
 
-    <div *ngIf="usuarioEncontrado && paquetesUsuario.length === 0" style="margin-top: 1rem; color: #888;">
-      Este usuario no tiene paquetes activos.
-    </div>
+    <p *ngIf="usuarioEncontrado && paquetesUsuario.length === 0" style="margin-top:1rem; color:#888;">
+      Este usuario no tiene paquetes registrados.
+    </p>
 
     <table class="tabla" *ngIf="paquetesUsuario.length > 0" style="margin-top: 1rem">
       <thead>
       <tr>
-        <th>ID Paquete</th>
-        <th>Descripción</th>
-        <th>Estado</th>
-        <th>Fecha</th>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Peso</th>
+        <th>Origen</th>
+        <th>Destino</th>
+        <th>Ciudad Origen</th>
+        <th>Ciudad Destino</th>
+        <th>Fecha Envío</th>
+        <th>Max Horas</th>
+        <th>Tiempo</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let p of paquetesUsuario">
         <td>{{ p.id }}</td>
-        <td>{{ p.descripcion }}</td>
-        <td>{{ p.estado }}</td>
-        <td>{{ p.fecha }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>{{ p.peso }} kg</td>
+        <td>{{ p.direccionDeOrigen }}</td>
+        <td>{{ p.direccionDeDestino }}</td>
+        <td>{{ p.ciudadDeOrigen }}</td>
+        <td>{{ p.ciudadDeDestino }}</td>
+        <td>{{ p.fechaEnvio }}</td>
+        <td>{{ p.maxHoras }}h</td>
+        <td>{{ p.tiempo }}h</td>
       </tr>
       </tbody>
     </table>
