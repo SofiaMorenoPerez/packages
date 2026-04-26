@@ -1,1 +1,68 @@
-<p>admin works!</p>
+<div class="container">
+  <h2 class="titulo">{{ modoEdicion ? 'Editar Administrativo' : 'Registrar Administrativo' }}</h2>
+
+  <div class="campo">
+    <label>Nombre</label>
+    <input type="text" [(ngModel)]="nombre" placeholder="Ej. Juan Pérez" />
+  </div>
+
+  <div class="campo">
+    <label>Edad</label>
+    <input type="number" [(ngModel)]="edad" placeholder="Ej. 30" />
+  </div>
+
+  <div class="campo">
+    <label>Fecha Inicio</label>
+    <input type="datetime-local" [(ngModel)]="fechaInicio" />
+  </div>
+
+  <div class="campo">
+    <label>Zona Asignada</label>
+    <input type="text" [(ngModel)]="zonaAsignada" placeholder="Ej. Norte" />
+  </div>
+
+  <button class="btn-guardar" (click)="guardar()">{{ modoEdicion ? 'Actualizar' : 'Guardar' }}</button>
+  <button class="btn-cancelar" (click)="limpiarFormulario()" *ngIf="modoEdicion">Cancelar</button>
+
+  <hr class="separador" />
+
+  <h2 class="titulo">Lista de Administrativos</h2>
+
+  <table class="tabla">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Edad</th>
+      <th>Fecha Inicio</th>
+      <th>Zona Asignada</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let a of adminsLista">
+      <td>{{ a.id }}</td>
+      <td>{{ a.nombre }}</td>
+      <td>{{ a.edad }}</td>
+      <td>{{ a.fechaInicio }}</td>
+      <td>{{ a.zonaAsignada }}</td>
+      <td>
+        <button class="btn-editar" (click)="editar(a)">Editar</button>
+        <button class="btn-eliminar" (click)="eliminar(a.id!)">Eliminar</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="adminToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header" [ngStyle]="{'background-color': toastColor}">
+        <strong class="me-auto">{{ toastTitulo }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ toastMensaje }}
+      </div>
+    </div>
+  </div>
+</div>
