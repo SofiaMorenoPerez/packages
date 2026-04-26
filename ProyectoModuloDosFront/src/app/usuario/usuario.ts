@@ -17,7 +17,7 @@ export class Usuario implements OnInit {
   usuariosLista: UsuarioModel[] = [];
 
   nombre: string = '';
-  tipo: TipoUsuario | '' = '';
+  tipo: TipoUsuario = TipoUsuario.NORMAL;
   ciudad: string = '';
   direccion: string = '';
   telefono: number = 0;
@@ -114,7 +114,7 @@ export class Usuario implements OnInit {
 
   limpiarFormulario(): void {
     this.nombre = '';
-    this.tipo = '';
+    this.tipo = TipoUsuario.NORMAL;
     this.ciudad = '';
     this.direccion = '';
     this.telefono = 0;

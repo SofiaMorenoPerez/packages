@@ -9,7 +9,7 @@
   <div class="campo">
     <label>Tipo de Usuario</label>
     <select [(ngModel)]="tipo">
-      <option value="">— Seleccionar —</option>
+
       <option *ngFor="let t of tiposUsuario" [value]="t">{{ t }}</option>
     </select>
   </div>
