@@ -44,7 +44,7 @@ export class Conductor implements OnInit {
       const toastEl = document.getElementById('conductorToast');
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
-    }, 100);
+    }, 50);
   }
 
   ngOnInit(): void {

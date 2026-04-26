@@ -54,7 +54,7 @@ export class Admin implements OnInit {
       const toastEl = document.getElementById('adminToast');
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
-    }, 100);
+    }, 50);
   }
 
   ngOnInit(): void {

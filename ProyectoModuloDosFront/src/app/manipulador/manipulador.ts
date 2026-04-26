@@ -44,7 +44,7 @@ export class Manipulador implements OnInit {
       const toastEl = document.getElementById('manipuladorToast');
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
-    }, 100);
+    }, 50);
   }
 
   ngOnInit(): void {

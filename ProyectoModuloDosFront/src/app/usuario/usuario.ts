@@ -48,7 +48,7 @@ export class Usuario implements OnInit {
       const toastEl = document.getElementById('usuarioToast');
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
-    }, 100);
+    }, 50);
   }
 
   ngOnInit(): void {
