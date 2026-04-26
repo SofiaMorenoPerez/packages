@@ -36,7 +36,7 @@ export class Admin implements OnInit {
 
   nombre: string = '';
   edad: number = 0;
-  fechaInicio: string = '';
+  fechaInicio: string = new Date().toISOString().slice(0, 16);
   zonaAsignada: string = '';
 
   modoEdicion: boolean = false;
@@ -64,7 +64,6 @@ export class Admin implements OnInit {
   cargarLista(): void {
     this.adminService.getAll().subscribe({
       next: (response) => {
-        console.log('admins:', response);
         this.adminsLista = response ?? [];
       },
       error: () => { this.mostrarToast('Error al cargar administrativos', false); },
@@ -73,32 +72,20 @@ export class Admin implements OnInit {
 
   cargarTodasListas(): void {
     this.usuarioService.getAll().subscribe({
-      next: (response) => {
-        console.log('usuarios:', response);
-        this.usuariosLista = response ?? [];
-      },
-      error: (e) => { console.log('error usuarios:', e); this.usuariosLista = []; },
+      next: (response) => { this.usuariosLista = response ?? []; },
+      error: () => { this.usuariosLista = []; },
     });
     this.paqueteService.getAll().subscribe({
-      next: (response) => {
-        console.log('paquetes:', response);
-        this.paquetesLista = response ?? [];
-      },
-      error: (e) => { console.log('error paquetes:', e); this.paquetesLista = []; },
+      next: (response) => { this.paquetesLista = response ?? []; },
+      error: () => { this.paquetesLista = []; },
     });
     this.conductorService.getAll().subscribe({
-      next: (response) => {
-        console.log('conductores:', response);
-        this.conductoresLista = response ?? [];
-      },
-      error: (e) => { console.log('error conductores:', e); this.conductoresLista = []; },
+      next: (response) => { this.conductoresLista = response ?? []; },
+      error: () => { this.conductoresLista = []; },
     });
     this.manipuladorService.getAll().subscribe({
-      next: (response) => {
-        console.log('manipuladores:', response);
-        this.manipuladoresLista = response ?? [];
-      },
-      error: (e) => { console.log('error manipuladores:', e); this.manipuladoresLista = []; },
+      next: (response) => { this.manipuladoresLista = response ?? []; },
+      error: () => { this.manipuladoresLista = []; },
     });
   }
 
@@ -180,7 +167,7 @@ export class Admin implements OnInit {
   limpiarFormulario(): void {
     this.nombre = '';
     this.edad = 0;
-    this.fechaInicio = '';
+    this.fechaInicio = new Date().toISOString().slice(0, 16);
     this.zonaAsignada = '';
     this.modoEdicion = false;
     this.idEditando = 0;
@@ -213,5 +200,4 @@ export class Admin implements OnInit {
       error: () => { this.mostrarToast('Error al cargar paquetes', false); },
     });
   }
-
 }
