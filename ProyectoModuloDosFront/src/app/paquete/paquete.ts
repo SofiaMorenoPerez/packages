@@ -33,7 +33,6 @@ export class Paquete implements OnInit {
 
   modoEdicion: boolean = false;
   idEditando: number = 0;
-
   toastMensaje: string = '';
   toastTitulo: string = '';
   toastColor: string = '';
@@ -41,7 +40,7 @@ export class Paquete implements OnInit {
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#9fdfb8' : '#ee9fb7';
+    this.toastColor = exito ? '#3fcd76' : '#c40505';
     setTimeout(() => {
       const toastEl = document.getElementById('paqueteToast');
       const toast = new bootstrap.Toast(toastEl);
@@ -74,7 +73,50 @@ export class Paquete implements OnInit {
     });
   }
 
+  validarTabla(): boolean {
+    const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const letrasNumeros = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s#-]+$/;
+
+    if (this.idUsuario <= 0) {
+      this.mostrarToast('El ID de usuario debe ser mayor a 0', false);
+      return false;
+    }
+    if (this.idConductor <= 0) {
+      this.mostrarToast('El ID de conductor debe ser mayor a 0', false);
+      return false;
+    }
+    if (this.idManipulador <= 0) {
+      this.mostrarToast('El ID de manipulador debe ser mayor a 0', false);
+      return false;
+    }
+    if (!this.tipo) {
+      this.mostrarToast('Debe seleccionar un tipo de paquete', false);
+      return false;
+    }
+    if (!soloLetras.test(this.ciudadDeOrigen)) {
+      this.mostrarToast('La ciudad de origen solo puede contener letras', false);
+      return false;
+    }
+    if (!soloLetras.test(this.ciudadDeDestino)) {
+      this.mostrarToast('La ciudad de destino solo puede contener letras', false);
+      return false;
+    }
+    if (!letrasNumeros.test(this.direccionDeOrigen)) {
+      this.mostrarToast('La dirección de origen contiene caracteres no válidos', false);
+      return false;
+    }
+    if (!letrasNumeros.test(this.direccionDeDestino)) {
+      this.mostrarToast('La dirección de destino contiene caracteres no válidos', false);
+      return false;
+    }
+    if (this.peso <= 0) {
+      this.mostrarToast('El peso debe ser mayor a 0', false);
+      return false;
+    }
+    return true;
+  }
   guardar(): void {
+    if (!this.validarTabla()) return;
     if (this.modoEdicion) {
       this.paqueteService
         .update(this.idEditando, this.ciudadDeDestino, this.direccionDeDestino)
