@@ -1,7 +1,21 @@
-<div class="container mt-4">
-  <h1><i class="bi bi-clipboard-check"></i> {{ modoEdicion ? 'Editar Envío' : 'Cree su Envio' }}</h1>
+<div class="container">
 
-  <ng-container *ngIf="!modoEdicion">
+  <div class="opciones-row">
+    <button class="btn-opcion" [class.activo]="vista === 'crear'" (click)="cambiarVista('crear')">
+      <i class="fa-solid fa-box"></i> Crear Envío
+    </button>
+    <button class="btn-opcion" [class.activo]="vista === 'editar'" (click)="cambiarVista('editar')">
+      <i class="fa-solid fa-pen-to-square"></i> Editar Paquete
+    </button>
+    <button class="btn-opcion" [class.activo]="vista === 'eliminar'" (click)="cambiarVista('eliminar')">
+      <i class="fa-solid fa-trash"></i> Eliminar Paquete
+    </button>
+  </div>
+
+  <hr class="separador" />
+
+  <div *ngIf="vista === 'crear'">
+    <h2 class="titulo">Crear Envío</h2>
     <div class="campo">
       <label>ID Usuario</label>
       <input type="number" [(ngModel)]="idUsuario" placeholder="Ej. 1" />
@@ -44,63 +58,155 @@
       <label>Peso (kg)</label>
       <input type="number" [(ngModel)]="peso" placeholder="Ej. 5" />
     </div>
-  </ng-container>
+    <button class="btn-guardar" (click)="guardar()">
+      <i class="fa-solid fa-floppy-disk"></i> Crear Envío
+    </button>
+  </div>
 
-  <ng-container *ngIf="modoEdicion">
-    <div class="campo">
-      <label>Ciudad de Destino</label>
-      <input type="text" [(ngModel)]="ciudadDeDestino" placeholder="Ej. Medellín" />
+  <div *ngIf="vista === 'editar'">
+    <h2 class="titulo">Editar Paquete</h2>
+
+    <div *ngIf="!modoEdicion">
+      <div class="campo">
+        <label>ID del Usuario</label>
+        <input type="number" [(ngModel)]="idBuscar" placeholder="Ej. 4" />
+      </div>
+      <button class="btn-guardar" (click)="buscarPaquetesPorIdUsuario()">
+        <i class="fa-solid fa-magnifying-glass"></i> Buscar
+      </button>
+
+      <table class="tabla" *ngIf="paquetesUsuario.length > 0" style="margin-top: 1rem">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tipo</th>
+          <th>Peso</th>
+          <th>Ciudad Origen</th>
+          <th>Ciudad Destino</th>
+          <th>Dirección Origen</th>
+          <th>Dirección Destino</th>
+          <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let p of paquetesUsuario">
+          <td>{{ p.id }}</td>
+          <td>{{ p.tipo }}</td>
+          <td>{{ p.peso }} kg</td>
+          <td>{{ p.ciudadDeOrigen }}</td>
+          <td>{{ p.ciudadDeDestino }}</td>
+          <td>{{ p.direccionDeOrigen }}</td>
+          <td>{{ p.direccionDeDestino }}</td>
+          <td>
+            <button class="btn-editar" (click)="editar(p)">Editar</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <p *ngIf="paquetesUsuario.length === 0 && idBuscar > 0" style="margin-top:1rem; color:#888;">
+        Este usuario no tiene paquetes registrados.
+      </p>
     </div>
-    <div class="campo">
-      <label>Dirección de Destino</label>
-      <input type="text" [(ngModel)]="direccionDeDestino" placeholder="Ej. Carrera 7 #32-15" />
+
+    <div *ngIf="modoEdicion">
+      <div class="edit-bar">✏️ Editando paquete ID: <strong>{{ idEditando }}</strong></div>
+      <div class="campo">
+        <label>Ciudad de Destino</label>
+        <input type="text" [(ngModel)]="ciudadDeDestino" placeholder="Ej. Medellín" />
+      </div>
+      <div class="campo">
+        <label>Dirección de Destino</label>
+        <input type="text" [(ngModel)]="direccionDeDestino" placeholder="Ej. Carrera 7 #32-15" />
+      </div>
+      <button class="btn-guardar" (click)="guardar()">
+        <i class="fa-solid fa-floppy-disk"></i> Actualizar
+      </button>
+      <button class="btn-cancelar" (click)="limpiarFormulario()">
+        <i class="fa-solid fa-xmark"></i> Cancelar
+      </button>
     </div>
-  </ng-container>
+  </div>
 
-  <button class="btn-guardar" (click)="guardar()">{{ modoEdicion ? 'Actualizar' : 'Crear Envío' }}</button>
-  <button class="btn-cancelar" (click)="limpiarFormulario()" *ngIf="modoEdicion">Cancelar</button>
+  <div *ngIf="vista === 'eliminar'">
+    <h2 class="titulo">Eliminar Paquete</h2>
+    <div class="campo">
+      <label>ID del Usuario</label>
+      <input type="number" [(ngModel)]="idBuscar" placeholder="Ej. 4" />
+    </div>
+    <button class="btn-guardar" (click)="buscarPaquetesPorIdUsuario()">
+      <i class="fa-solid fa-magnifying-glass"></i> Buscar
+    </button>
 
-  <hr/>
+    <table class="tabla" *ngIf="paquetesUsuario.length > 0" style="margin-top: 1rem">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tipo</th>
+        <th>Peso</th>
+        <th>Ciudad Origen</th>
+        <th>Ciudad Destino</th>
+        <th>Dirección Origen</th>
+        <th>Dirección Destino</th>
+        <th>Acción</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of paquetesUsuario">
+        <td>{{ p.id }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>{{ p.peso }} kg</td>
+        <td>{{ p.ciudadDeOrigen }}</td>
+        <td>{{ p.ciudadDeDestino }}</td>
+        <td>{{ p.direccionDeOrigen }}</td>
+        <td>{{ p.direccionDeDestino }}</td>
+        <td>
+          <button class="btn-eliminar" (click)="eliminar(p.id)">Eliminar</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
 
-  <h1><i class="bi bi-clipboard-check"></i> Obtenga información sobre su paquete</h1>
+    <p *ngIf="paquetesUsuario.length === 0 && idBuscar > 0" style="margin-top:1rem; color:#888;">
+      Este usuario no tiene paquetes registrados.
+    </p>
+  </div>
 
-  <table class="table table-striped mt-3">
-    <thead>
-    <tr>
-      <th>ID</th>
-      <th>ID Usuario</th>
-      <th>ID Conductor</th>
-      <th>ID Manipulador</th>
-      <th>Ciudad Origen</th>
-      <th>Ciudad Destino</th>
-      <th>Dirección Origen</th>
-      <th>Dirección Destino</th>
-      <th>Tipo</th>
-      <th>Peso</th>
-      <th>Max Horas</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let p of paquetesLista">
-      <td>{{ p.id }}</td>
-      <td>{{ p.idUsuario }}</td>
-      <td>{{ p.idConductor }}</td>
-      <td>{{ p.idManipulador }}</td>
-      <td>{{ p.ciudadDeOrigen }}</td>
-      <td>{{ p.ciudadDeDestino }}</td>
-      <td>{{ p.direccionDeOrigen }}</td>
-      <td>{{ p.direccionDeDestino }}</td>
-      <td>{{ p.tipo }}</td>
-      <td>{{ p.peso }}</td>
-      <td>{{ p.maxHoras }}</td>
-      <td>
-        <button class="btn-editar" (click)="editar(p)">Editar</button>
-        <button class="btn-eliminar" (click)="eliminar(p.id)">Eliminar</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+  <div *ngIf="vista === 'lista'">
+    <h2 class="titulo">Lista de Paquetes</h2>
+    <table class="tabla">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>ID Usuario</th>
+        <th>ID Conductor</th>
+        <th>ID Manipulador</th>
+        <th>Ciudad Origen</th>
+        <th>Ciudad Destino</th>
+        <th>Dirección Origen</th>
+        <th>Dirección Destino</th>
+        <th>Tipo</th>
+        <th>Peso</th>
+        <th>Max Horas</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of paquetesLista">
+        <td>{{ p.id }}</td>
+        <td>{{ p.idUsuario }}</td>
+        <td>{{ p.idConductor }}</td>
+        <td>{{ p.idManipulador }}</td>
+        <td>{{ p.ciudadDeOrigen }}</td>
+        <td>{{ p.ciudadDeDestino }}</td>
+        <td>{{ p.direccionDeOrigen }}</td>
+        <td>{{ p.direccionDeDestino }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>{{ p.peso }}</td>
+        <td>{{ p.maxHoras }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="paqueteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -108,9 +214,7 @@
         <strong class="me-auto">{{ toastTitulo }}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
       </div>
-      <div class="toast-body">
-        {{ toastMensaje }}
-      </div>
+      <div class="toast-body">{{ toastMensaje }}</div>
     </div>
   </div>
 
