@@ -30,8 +30,8 @@ public class LanzadorDeExcepcion {
     }
 
     public static void verificarNombre(String nombre) throws NombreException {
-        if (nombre == null || nombre.isEmpty()) throw new NombreException();
-        if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) throw new NombreException();
+        if (nombre == null || nombre.isBlank()) throw new NombreException();
+        if (!nombre.trim().matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) throw new NombreException();
     }
 
     public static void verificarEdad(int edad) throws EdadException {
