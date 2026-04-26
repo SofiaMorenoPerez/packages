@@ -1,6 +1,6 @@
 import {TipoUsuario} from './tipo.usuario';
 
-interface UsuarioModel {
+export interface UsuarioModel {
   id: number;
   nombre: string;
   tipo: TipoUsuario;
@@ -9,3 +9,4 @@ interface UsuarioModel {
   direccion: string;
   telefono: number;
 }
+
