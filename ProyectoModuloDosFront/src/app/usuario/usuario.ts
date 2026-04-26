@@ -138,14 +138,18 @@ export class Usuario implements OnInit {
     }
   }
 
-  buscarPorIdYEditar(): void {
+
+
+  buscarPorIdYEliminar(): void {
     const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
     if (encontrado) {
-      this.editar(encontrado);
+      this.eliminar(encontrado.id);
     } else {
       this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
     }
   }
+
+
 
   editar(u: UsuarioModel): void {
     this.modoEdicion = true;

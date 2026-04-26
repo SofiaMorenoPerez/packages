@@ -13,6 +13,9 @@
     <button class="btn-opcion" [class.activo]="vista === 'paquetes'" (click)="cambiarVista('paquetes')">
       <i class="fa-solid fa-boxes-stacked"></i> Paquetes Activos
     </button>
+    <button class="btn-opcion" [class.activo]="vista === 'eliminar'" (click)="cambiarVista('eliminar')">
+      <i class="fa-solid fa-trash-can"></i> Eliminar cuenta
+    </button>
     <a class="btn-opcion" routerLink="/paquete">
       <i class="fa-solid fa-box-open"></i>  Crear Paquete
     </a>
@@ -98,6 +101,22 @@
     </div>
   </div>
 
+  <div *ngIf="vista === 'eliminar'">
+
+    <div *ngIf="vista === 'eliminar'">
+      <h2 class="titulo">Eliminar cuenta</h2>
+
+      <div class="campo">
+        <label>ID del Usuario</label>
+        <input type="number" [(ngModel)]="idBuscar" placeholder="Ej. 4" />
+      </div>
+      <button class="btn-eliminar" (click)="buscarPorIdYEliminar()">
+        <i class="fa-solid fa-trash"></i> Eliminar
+      </button>
+    </div>
+
+  </div>
+
   <!-- ── PAQUETES ── -->
   <div *ngIf="vista === 'paquetes'">
     <h2 class="titulo">Paquetes por Usuario</h2>
@@ -151,6 +170,7 @@
       </tbody>
     </table>
   </div>
+
 
   <!-- Toast -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
