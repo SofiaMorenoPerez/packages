@@ -9,19 +9,13 @@ import { Inicio } from './inicio/inicio';
 import { Paquete } from './paquete/paquete';
 import { Usuario } from './usuario/usuario';
 import { Empleado } from './empleado/empleado';
+import { Crearenvio } from './paquete/crearenvio/crearenvio';
+import { Informacionpaquete } from './paquete/informacionpaquete/informacionpaquete';
 
 @NgModule({
-  declarations: [App, Inicio, Paquete, Usuario, Empleado],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-  ],
-  providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideHttpClient(),
-    provideAnimations(),
-  ],
+  declarations: [App, Inicio, Paquete, Usuario, Empleado, Crearenvio, Informacionpaquete],
+  imports: [BrowserModule, AppRoutingModule, FormsModule],
+  providers: [provideBrowserGlobalErrorListeners(), provideHttpClient(), provideAnimations()],
   bootstrap: [App],
 })
 export class AppModule {}
