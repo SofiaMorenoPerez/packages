@@ -1,5 +1,6 @@
 package co.edu.unbosque.proyectomodulofirst.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,7 +14,6 @@ import co.edu.unbosque.proyectomodulofirst.entity.Paquete;
 import co.edu.unbosque.proyectomodulofirst.entity.Usuario;
 import co.edu.unbosque.proyectomodulofirst.exception.CiudadException;
 import co.edu.unbosque.proyectomodulofirst.exception.DireccionException;
-import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
 import co.edu.unbosque.proyectomodulofirst.exception.LanzadorDeExcepcion;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
 import co.edu.unbosque.proyectomodulofirst.exception.TelefonoException;
@@ -33,6 +33,12 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
     private ModelMapper mapper;
 
     public UsuarioService() {
+    }
+
+    private boolean estaEnProceso(Paquete p) {
+        if (p.getFechaEnvio() == null) return false;
+        LocalDateTime fin = p.getFechaEnvio().plusHours(p.getMaxHoras());
+        return LocalDateTime.now().isBefore(fin);
     }
 
     // 0 - Creado exitosamente
@@ -75,7 +81,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
     }
 
     // 0 - Eliminado exitosamente
-    // 1 - Tiene paquetes asociados
+    // 1 - Tiene paquetes activos (en proceso)
     // 2 - No encontrado
     @Override
     public int deleteById(Long id) {
@@ -83,7 +89,7 @@ public class UsuarioService implements CRUDOperation<UsuarioDTO> {
         if (encontrado.isPresent()) {
             List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
             for (Paquete p : paquetes) {
-                if (p.getIdUsuario() == id) return 1;
+                if (p.getIdUsuario() == id && estaEnProceso(p)) return 1;
             }
             usuarioRepo.delete(encontrado.get());
             return 0;

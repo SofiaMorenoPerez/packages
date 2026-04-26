@@ -1,5 +1,6 @@
 package co.edu.unbosque.proyectomodulofirst.service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +41,24 @@ public class PaqueteService implements CRUDOperation<PaqueteDTO> {
     public PaqueteService() {
     }
 
+    private boolean estaEnProceso(Paquete p) {
+        if (p.getFechaEnvio() == null) return false;
+        LocalDateTime fin = p.getFechaEnvio().plusHours(p.getMaxHoras());
+        return LocalDateTime.now().isBefore(fin);
+    }
+
+    private long calcularTiempoRestanteMinutos(Paquete p) {
+        if (p.getFechaEnvio() == null) return 0;
+        LocalDateTime fin = p.getFechaEnvio().plusHours(p.getMaxHoras());
+        Duration duracion = Duration.between(LocalDateTime.now(), fin);
+        return Math.max(duracion.toMinutes(), 0);
+    }
+
     // 0  - Creado exitosamente
     // 1  - Tipo de paquete nulo
     // 2  - Peso invalido
-    // 3  - Ciudad de origen invalida
-    // 4  - Ciudad de destino invalida
-    // 5  - Direccion de origen invalida
-    // 6  - Direccion de destino invalida
+    // 3  - Ciudad invalida
+    // 5  - Direccion invalida
     // 7  - Id invalido
     // 8  - Usuario no existe
     // 9  - Conductor no existe
@@ -83,10 +95,8 @@ public class PaqueteService implements CRUDOperation<PaqueteDTO> {
 
         List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
         for (Paquete p : paquetes) {
-            if (p.getIdConductor() == newData.getIdConductor()
-                    && p.getTiempoRestanteMinutos() > 0) return 11;
-            if (p.getIdManipulador() == newData.getIdManipulador()
-                    && p.getTiempoRestanteMinutos() > 0) return 12;
+            if (p.getIdConductor() == newData.getIdConductor() && estaEnProceso(p)) return 11;
+            if (p.getIdManipulador() == newData.getIdManipulador() && estaEnProceso(p)) return 12;
         }
 
         newData.setFechaEnvio(LocalDateTime.now());
@@ -102,7 +112,7 @@ public class PaqueteService implements CRUDOperation<PaqueteDTO> {
         List<PaqueteDTO> dtoList = new ArrayList<>();
         entityList.forEach((entidad) -> {
             PaqueteDTO dto = mapper.map(entidad, PaqueteDTO.class);
-            dto.setTiempo((int) entidad.getTiempoRestanteMinutos());
+            dto.setTiempo((int) calcularTiempoRestanteMinutos(entidad));
             dtoList.add(dto);
         });
         return dtoList;
@@ -171,3 +181,4 @@ public class PaqueteService implements CRUDOperation<PaqueteDTO> {
         return paqueteRepo.existsById(id);
     }
 }
+

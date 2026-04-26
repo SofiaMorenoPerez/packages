@@ -100,14 +100,7 @@ public class Paquete {
      *
      * @return minutos restantes para la entrega, o 0 si el tiempo ya expiró o la fecha de envío es nula
      */
-    public long getTiempoRestanteMinutos() {
-        if (fechaEnvio == null) return 0;
-        LocalDateTime fin = fechaEnvio.plusHours(maxHoras);
-        Duration duracion = Duration.between(LocalDateTime.now(), fin);
-        long minutosRestantes = duracion.toMinutes();
-        return Math.max(minutosRestantes, 0);
-    }
-
+   
     @Override
     public String toString() {
         return "Paquete [id=" + id + ", idUsuario=" + idUsuario + ", idConductor=" + idConductor

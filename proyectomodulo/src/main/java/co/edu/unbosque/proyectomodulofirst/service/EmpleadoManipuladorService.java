@@ -1,5 +1,6 @@
 package co.edu.unbosque.proyectomodulofirst.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,6 @@ import co.edu.unbosque.proyectomodulofirst.dto.EmpleadoManipuladorDTO;
 import co.edu.unbosque.proyectomodulofirst.entity.EmpleadoManipulador;
 import co.edu.unbosque.proyectomodulofirst.entity.Paquete;
 import co.edu.unbosque.proyectomodulofirst.exception.EdadException;
-import co.edu.unbosque.proyectomodulofirst.exception.InvalidDataException;
 import co.edu.unbosque.proyectomodulofirst.exception.LanzadorDeExcepcion;
 import co.edu.unbosque.proyectomodulofirst.exception.NombreException;
 import co.edu.unbosque.proyectomodulofirst.exception.TipoPaqueteException;
@@ -32,6 +32,12 @@ public class EmpleadoManipuladorService implements CRUDOperation<EmpleadoManipul
     private ModelMapper mapper;
 
     public EmpleadoManipuladorService() {
+    }
+
+    private boolean estaEnProceso(Paquete p) {
+        if (p.getFechaEnvio() == null) return false;
+        LocalDateTime fin = p.getFechaEnvio().plusHours(p.getMaxHoras());
+        return LocalDateTime.now().isBefore(fin);
     }
 
     // 0 - Creado exitosamente
@@ -71,7 +77,7 @@ public class EmpleadoManipuladorService implements CRUDOperation<EmpleadoManipul
     }
 
     // 0 - Eliminado exitosamente
-    // 1 - Tiene paquetes asignados
+    // 1 - Tiene paquetes activos en proceso
     // 2 - No encontrado
     @Override
     public int deleteById(Long id) {
@@ -79,7 +85,7 @@ public class EmpleadoManipuladorService implements CRUDOperation<EmpleadoManipul
         if (!encontrado.isPresent()) return 2;
         List<Paquete> paquetes = (List<Paquete>) paqueteRepo.findAll();
         for (Paquete p : paquetes) {
-            if (p.getIdManipulador() == id) return 1;
+            if (p.getIdManipulador() == id && estaEnProceso(p)) return 1;
         }
         empleadoManipuladorRepo.delete(encontrado.get());
         return 0;
