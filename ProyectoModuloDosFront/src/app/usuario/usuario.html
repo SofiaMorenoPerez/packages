@@ -142,6 +142,8 @@
       <thead>
       <tr>
         <th>ID</th>
+        <th>ID conductor</th>
+        <th>ID manipulador</th>
         <th>Tipo</th>
         <th>Peso</th>
         <th>Origen</th>
@@ -156,6 +158,8 @@
       <tbody>
       <tr *ngFor="let p of paquetesUsuario">
         <td>{{ p.id }}</td>
+        <td>{{p.idConductor}}</td>
+        <td>{{p.idManipulador}}</td>
         <td>{{ p.tipo }}</td>
         <td>{{ p.peso }} kg</td>
         <td>{{ p.direccionDeOrigen }}</td>

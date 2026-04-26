@@ -180,12 +180,19 @@
     <table class="tabla">
       <thead>
       <tr>
-        <th>ID</th><th>Tipo</th><th>Peso</th><th>Origen</th><th>Destino</th><th>Ciudad Origen</th><th>Ciudad Destino</th><th>Fecha Envío</th>
+        <th>ID</th>
+        <th>ID Usuario</th>
+        <th>ID Conductor</th>
+        <th>ID Manipulador</th>
+        <th>Tipo</th><th>Peso</th><th>Origen</th><th>Destino</th><th>Ciudad Origen</th><th>Ciudad Destino</th><th>Fecha Envío</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let p of paquetesLista">
         <td>{{ p.id }}</td>
+        <td>{{p.idUsuario}}</td>
+        <td>{{p.idConductor}}</td>
+        <td>{{p.idManipulador}}</td>
         <td>{{ p.tipo }}</td>
         <td>{{ p.peso }} kg</td>
         <td>{{ p.direccionDeOrigen }}</td>

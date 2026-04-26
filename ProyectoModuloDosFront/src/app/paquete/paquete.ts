@@ -36,7 +36,7 @@ export class Paquete implements OnInit {
   ciudadDeDestino: string = '';
   direccionDeOrigen: string = '';
   direccionDeDestino: string = '';
-  fechaEnvio: string = '';
+  fechaEnvio: string = new Date().toISOString().slice(0, 16);
   tipo: TipoPaquete = TipoPaquete.ALIMENTICIO;
   peso: number = 0;
   maxHoras: number = 0;
@@ -236,7 +236,7 @@ export class Paquete implements OnInit {
     this.ciudadDeDestino = '';
     this.direccionDeOrigen = '';
     this.direccionDeDestino = '';
-    this.fechaEnvio = '';
+    this.fechaEnvio = new Date().toISOString().slice(0, 16);
     this.tipo = TipoPaquete.ALIMENTICIO;
     this.peso = 0;
     this.maxHoras = 0;
