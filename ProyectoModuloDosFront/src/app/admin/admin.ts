@@ -129,9 +129,19 @@ export class Admin implements OnInit {
     } else {
       this.adminService.create(this.nombre, this.edad, this.fechaInicio, this.zonaAsignada).subscribe({
         next: (response) => {
-          this.mostrarToast(response, true);
-          this.limpiarFormulario();
-          this.cargarLista();
+          this.adminService.getAll().subscribe({
+            next: (lista) => {
+              const nuevo = lista[lista.length - 1];
+              this.mostrarToast(`${response} — Su ID es: ${nuevo?.id}`, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            },
+            error: () => {
+              this.mostrarToast(response, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            }
+          });
         },
         error: (error) => {
           const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
@@ -141,15 +151,6 @@ export class Admin implements OnInit {
     }
   }
 
-  editar(a: AdminModel): void {
-    this.modoEdicion = true;
-    this.idEditando = a.id!;
-    this.nombre = a.nombre;
-    this.edad = a.edad;
-    this.fechaInicio = a.fechaInicio;
-    this.zonaAsignada = a.zonaAsignada;
-    this.vista = 'editar';
-  }
 
   eliminar(id: number): void {
     this.adminService.delete(id).subscribe({

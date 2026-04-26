@@ -127,9 +127,19 @@ export class Conductor implements OnInit {
     } else {
       this.conductorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
         next: (response) => {
-          this.mostrarToast(response, true);
-          this.limpiarFormulario();
-          this.cargarLista();
+          this.conductorService.getAll().subscribe({
+            next: (lista) => {
+              const nuevo = lista[lista.length - 1];
+              this.mostrarToast(`${response} — Su ID es: ${nuevo?.id}`, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            },
+            error: () => {
+              this.mostrarToast(response, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            }
+          });
         },
         error: (error) => {
           const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
@@ -139,15 +149,6 @@ export class Conductor implements OnInit {
     }
   }
 
-  editar(c: ConductorModel): void {
-    this.modoEdicion = true;
-    this.idEditando = c.id!;
-    this.nombre = c.nombre;
-    this.edad = c.edad;
-    this.fechaInicio = c.fechaInicio;
-    this.tipoVehiculo = c.tipoVehiculo;
-    this.vista = 'editar';
-  }
 
   eliminar(id: number): void {
     this.conductorService.delete(id).subscribe({

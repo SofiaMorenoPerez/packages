@@ -128,9 +128,19 @@ export class Manipulador implements OnInit {
     } else {
       this.manipuladorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
         next: (response) => {
-          this.mostrarToast(response, true);
-          this.limpiarFormulario();
-          this.cargarLista();
+          this.manipuladorService.getAll().subscribe({
+            next: (lista) => {
+              const nuevo = lista[lista.length - 1];
+              this.mostrarToast(`${response} — Su ID es: ${nuevo?.id}`, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            },
+            error: () => {
+              this.mostrarToast(response, true);
+              this.limpiarFormulario();
+              this.cargarLista();
+            }
+          });
         },
         error: (error) => {
           const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);

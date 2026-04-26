@@ -128,14 +128,15 @@ export class Usuario implements OnInit {
           next: (response) => {
             this.usuarioService.getAll().subscribe({
               next: (lista) => {
-                this.usuariosLista = lista;
-                const nuevoUsuario = lista[lista.length - 1];
-                this.mostrarToast(`${response} — Su ID es: ${nuevoUsuario?.id} no lo comparta con nadie`, true);
+                const nuevo = lista[lista.length - 1];
+                this.mostrarToast(`${response} — Su ID es: ${nuevo?.id}`, true);
                 this.limpiarFormulario();
+                this.cargarLista();
               },
               error: () => {
                 this.mostrarToast(response, true);
                 this.limpiarFormulario();
+                this.cargarLista();
               }
             });
           },
