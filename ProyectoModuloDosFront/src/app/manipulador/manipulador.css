@@ -1,0 +1,52 @@
+.card {
+  border-radius: 16px;
+  border: none;
+}
+
+.card-header {
+  border-radius: 16px 16px 0 0 !important;
+  background-color: #1a6fc4;
+  padding: 20px 24px;
+}
+
+.card-header h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h4 {
+  font-weight: 600;
+  color: #1a6fc4;
+  margin-bottom: 16px;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+}
+
+.form-control:focus {
+  border-color: #1a6fc4;
+  box-shadow: 0 0 0 3px rgba(26, 111, 196, 0.15);
+}
+
+.table thead {
+  background-color: #1a6fc4;
+  color: white;
+}
+
+.table tbody tr:hover {
+  background-color: #e8f1fb;
+}
+
+hr {
+  border-color: #eee;
+  margin: 24px 0;
+}
