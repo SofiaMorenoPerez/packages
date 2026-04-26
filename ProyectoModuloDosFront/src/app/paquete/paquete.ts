@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-paquete',
@@ -8,10 +7,24 @@ import { Router } from '@angular/router';
   styleUrl: './paquete.css',
 })
 export class Paquete {
+  envio = {
+    idUsuario: 0,
+    idConductor: 0,
+    idManipulador: 0,
+    ciudadDeOrigen: '',
+    ciudadDeDestino: '',
+    direccionDeOrigen: '',
+    direccionDeDestino: '',
+    fechaEnvio: '',
+    tipo: '',
+    peso: 0,
+    maxHoras: 0,
+    tiempo: 0,
+  };
 
-  constructor(private router: Router) {}
-
-  irPaquete() {
-    this.router.navigate(['/paquete']);
+  paquete() {
+    console.log(this.envio);
+    // aquí después conectamos con el backend
   }
 }
+

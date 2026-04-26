@@ -5,16 +5,16 @@
     <tbody>
     <tr>
       <td><label>ID Usuario</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Usuario"></td>
+      <td><input type="number" class="form-control" placeholder="ID Usuario" [(ngModel)]="envio.idUsuario"></td>
       <td><label>ID Conductor</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Conductor"></td>
+      <td><input type="number" class="form-control" placeholder="ID Conductor" [(ngModel)]="envio.idConductor"></td>
     </tr>
     <tr>
       <td><label>ID Manipulador</label></td>
-      <td><input type="number" class="form-control" placeholder="ID Manipulador"></td>
+      <td><input type="number" class="form-control" placeholder="ID Manipulador" [(ngModel)]="envio.idManipulador"></td>
       <td><label>Tipo de Paquete</label></td>
       <td>
-        <select class="form-control">
+        <select class="form-control" [(ngModel)]="envio.tipo">
           <option value="">Seleccione...</option>
           <option value="ALIMENTICIO">Alimenticio</option>
           <option value="NO_ALIMENTICIO">No alimenticio</option>
@@ -24,34 +24,33 @@
     </tr>
     <tr>
       <td><label>Ciudad de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de origen"></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de origen" [(ngModel)]="envio.ciudadDeOrigen"></td>
       <td><label>Ciudad de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Ciudad de destino"></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de destino" [(ngModel)]="envio.ciudadDeDestino"></td>
     </tr>
     <tr>
       <td><label>Dirección de Origen</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de origen"></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de origen" [(ngModel)]="envio.direccionDeOrigen"></td>
       <td><label>Dirección de Destino</label></td>
-      <td><input type="text" class="form-control" placeholder="Dirección de destino"></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de destino" [(ngModel)]="envio.direccionDeDestino"></td>
     </tr>
     <tr>
       <td><label>Fecha de Envío</label></td>
-      <td><input type="datetime-local" class="form-control"></td>
+      <td><input type="datetime-local" class="form-control" [(ngModel)]="envio.fechaEnvio"></td>
       <td><label>Peso (kg)</label></td>
-      <td><input type="number" class="form-control" placeholder="Peso"></td>
+      <td><input type="number" class="form-control" placeholder="Peso" [(ngModel)]="envio.peso"></td>
     </tr>
     <tr>
       <td><label>Máximo de Horas</label></td>
-      <td><input type="number" class="form-control" placeholder="Max horas"></td>
+      <td><input type="number" class="form-control" placeholder="Max horas" [(ngModel)]="envio.maxHoras"></td>
       <td><label>Tiempo</label></td>
-      <td><input type="number" class="form-control" placeholder="Tiempo"></td>
+      <td><input type="number" class="form-control" placeholder="Tiempo" [(ngModel)]="envio.tiempo"></td>
     </tr>
     </tbody>
   </table>
 
-  <button class="btn btn-primary">Crear Envío</button>
+  <button class="btn btn-primary" (click)="paquete()">Crear Envío</button>
 
   <h1>Obtenga información sobre su paquete</h1>
-
 
 </div>

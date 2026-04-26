@@ -9,10 +9,11 @@ import { Usuario } from './usuario/usuario';
 import { Manipulador } from './manipulador/manipulador';
 import { Admin } from './admin/admin';
 import { Conductor } from './conductor/conductor';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [App, Inicio, Paquete, Usuario, Manipulador, Admin, Conductor],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
 })
