@@ -16,6 +16,11 @@ export class Usuario implements OnInit {
 
   usuariosLista: UsuarioModel[] = [];
 
+  vista: string = 'registrar';
+  idBuscar: number = 0;
+  usuarioEncontrado: UsuarioModel | null = null;
+  paquetesUsuario: any[] = [];
+
   nombre: string = '';
   tipo: TipoUsuario = TipoUsuario.NORMAL;
   ciudad: string = '';
@@ -57,10 +62,46 @@ export class Usuario implements OnInit {
     });
   }
 
+  buscarPorId(): void {
+    const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.usuarioEncontrado = encontrado;
+      this.modoEdicion = true;
+      this.idEditando = encontrado.id;
+      this.nombre = encontrado.nombre;
+      this.tipo = encontrado.tipo as TipoUsuario;
+      this.ciudad = encontrado.ciudad;
+      this.direccion = encontrado.direccion;
+      this.telefono = encontrado.telefono;
+    } else {
+      this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
+    }
+  }
+
+  buscarPaquetesPorId(): void {
+    const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.usuarioEncontrado = encontrado;
+      this.paquetesUsuario = (encontrado as any).paquetes || [];
+    } else {
+      this.usuarioEncontrado = null;
+      this.paquetesUsuario = [];
+      this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
+    }
+  }
+
+  cambiarVista(v: string): void {
+    this.vista = v;
+    this.idBuscar = 0;
+    this.usuarioEncontrado = null;
+    this.paquetesUsuario = [];
+    this.limpiarFormulario();
+  }
+
   guardar(): void {
     if (this.modoEdicion) {
       this.usuarioService
-        .update(this.idEditando, this.nombre, this.tipo as TipoUsuario, this.ciudad, this.direccion, this.telefono)
+        .update(this.idEditando, this.nombre, this.tipo, this.ciudad, this.direccion, this.telefono)
         .subscribe({
           next: (response) => {
             this.mostrarToast(response, true);
@@ -74,7 +115,7 @@ export class Usuario implements OnInit {
         });
     } else {
       this.usuarioService
-        .create(this.nombre, this.tipo as TipoUsuario, this.ciudad, this.direccion, this.telefono)
+        .create(this.nombre, this.tipo, this.ciudad, this.direccion, this.telefono)
         .subscribe({
           next: (response) => {
             this.mostrarToast(response, true);
@@ -97,6 +138,7 @@ export class Usuario implements OnInit {
     this.ciudad = u.ciudad;
     this.direccion = u.direccion;
     this.telefono = u.telefono;
+    this.vista = 'editar';
   }
 
   eliminar(id: number): void {
@@ -120,5 +162,6 @@ export class Usuario implements OnInit {
     this.telefono = 0;
     this.modoEdicion = false;
     this.idEditando = 0;
+    this.usuarioEncontrado = null;
   }
 }
