@@ -126,9 +126,18 @@ export class Usuario implements OnInit {
         .create(this.nombre, this.tipo, this.ciudad, this.direccion, this.telefono)
         .subscribe({
           next: (response) => {
-            this.mostrarToast(response, true);
-            this.limpiarFormulario();
-            this.cargarLista();
+            this.usuarioService.getAll().subscribe({
+              next: (lista) => {
+                this.usuariosLista = lista;
+                const nuevoUsuario = lista[lista.length - 1];
+                this.mostrarToast(`${response} — Su ID es: ${nuevoUsuario?.id} no lo comparta con nadie`, true);
+                this.limpiarFormulario();
+              },
+              error: () => {
+                this.mostrarToast(response, true);
+                this.limpiarFormulario();
+              }
+            });
           },
           error: (error) => {
             const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
@@ -138,8 +147,6 @@ export class Usuario implements OnInit {
     }
   }
 
-
-
   buscarPorIdYEliminar(): void {
     const encontrado = this.usuariosLista.find(u => u.id === Number(this.idBuscar));
     if (encontrado) {
@@ -148,10 +155,6 @@ export class Usuario implements OnInit {
       this.mostrarToast(`No se encontró usuario con ID ${this.idBuscar}`, false);
     }
   }
-
-
-
-
 
   eliminar(id: number): void {
     this.usuarioService.delete(id).subscribe({

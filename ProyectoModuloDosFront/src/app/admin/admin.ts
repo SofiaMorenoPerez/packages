@@ -49,7 +49,7 @@ export class Admin implements OnInit {
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#3fcd76' : '#c40505';
+    this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
     setTimeout(() => {
       const toastEl = document.getElementById('adminToast');
       const toast = new bootstrap.Toast(toastEl);
