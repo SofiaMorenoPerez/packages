@@ -5,13 +5,13 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { Inicio } from './inicio/inicio';
 import { Usuario } from './usuario/usuario';
-import {Crearenvio} from './paquete/crearenvio/crearenvio';
+import { Paquete } from './paquete/paquete';
 
 const routes: Routes = [
   { path: '', redirectTo: 'inicio', pathMatch: 'full' },
   { path: 'inicio', component: Inicio },
   { path: 'usuario', component: Usuario },
-  { path: 'crear-envio', component: Crearenvio }
+  { path: 'paquete', component: Paquete }
 ];
 
 @NgModule({

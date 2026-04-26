@@ -1,1 +1,53 @@
-<p>paquete works!</p>
+<div class="container mt-4">
+  <h1>Cree su Envio</h1>
+
+  <table class="table table-striped-columns">
+    <tbody>
+    <tr>
+      <td><label>ID Usuario</label></td>
+      <td><input type="number" class="form-control" placeholder="ID Usuario"></td>
+      <td><label>ID Conductor</label></td>
+      <td><input type="number" class="form-control" placeholder="ID Conductor"></td>
+    </tr>
+    <tr>
+      <td><label>ID Manipulador</label></td>
+      <td><input type="number" class="form-control" placeholder="ID Manipulador"></td>
+      <td><label>Tipo de Paquete</label></td>
+      <td>
+        <select class="form-control">
+          <option value="">Seleccione...</option>
+          <option value="ALIMENTICIO">Alimenticio</option>
+          <option value="NO_ALIMENTICIO">No alimenticio</option>
+          <option value="CARTA">Carta</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label>Ciudad de Origen</label></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de origen"></td>
+      <td><label>Ciudad de Destino</label></td>
+      <td><input type="text" class="form-control" placeholder="Ciudad de destino"></td>
+    </tr>
+    <tr>
+      <td><label>Dirección de Origen</label></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de origen"></td>
+      <td><label>Dirección de Destino</label></td>
+      <td><input type="text" class="form-control" placeholder="Dirección de destino"></td>
+    </tr>
+    <tr>
+      <td><label>Fecha de Envío</label></td>
+      <td><input type="datetime-local" class="form-control"></td>
+      <td><label>Peso (kg)</label></td>
+      <td><input type="number" class="form-control" placeholder="Peso"></td>
+    </tr>
+    <tr>
+      <td><label>Máximo de Horas</label></td>
+      <td><input type="number" class="form-control" placeholder="Max horas"></td>
+      <td><label>Tiempo</label></td>
+      <td><input type="number" class="form-control" placeholder="Tiempo"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <button class="btn btn-primary">Crear Envío</button>
+</div>
