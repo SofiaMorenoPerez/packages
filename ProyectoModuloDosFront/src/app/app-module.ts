@@ -6,10 +6,12 @@ import { App } from './app';
 import { Inicio } from './inicio/inicio';
 import { Paquete } from './paquete/paquete';
 import { Usuario } from './usuario/usuario';
-import { Empleado } from './empleado/empleado';
+import { Manipulador } from './manipulador/manipulador';
+import { Admin } from './admin/admin';
+import { Conductor } from './conductor/conductor';
 
 @NgModule({
-  declarations: [App, Inicio, Paquete, Usuario, Empleado],
+  declarations: [App, Inicio, Paquete, Usuario, Manipulador, Admin, Conductor],
   imports: [BrowserModule, AppRoutingModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
