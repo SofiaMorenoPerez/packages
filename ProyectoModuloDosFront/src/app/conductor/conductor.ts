@@ -26,7 +26,7 @@ export class Conductor implements OnInit {
 
   nombre: string = '';
   edad: number = 0;
-  fechaInicio: string = '';
+  fechaInicio: string = new Date().toISOString().slice(0, 16);
   tipoVehiculo: string = '';
 
   modoEdicion: boolean = false;
@@ -101,6 +101,16 @@ export class Conductor implements OnInit {
     }
   }
 
+  buscarPorIdYEliminar(): void {
+    const encontrado = this.conductoresLista.find(u => u.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.eliminar(encontrado.id);
+    } else {
+      this.mostrarToast(`No se encontró conductor con ID ${this.idBuscar}`, false);
+    }
+  }
+
+
   guardar(): void {
     if (this.modoEdicion) {
       this.conductorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
@@ -155,7 +165,7 @@ export class Conductor implements OnInit {
   limpiarFormulario(): void {
     this.nombre = '';
     this.edad = 0;
-    this.fechaInicio = '';
+    this.fechaInicio = new Date().toISOString().slice(0, 16);
     this.tipoVehiculo = '';
     this.modoEdicion = false;
     this.idEditando = 0;
