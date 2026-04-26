@@ -1,6 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ConductorService } from '../services/conductor.service';
+import { PaqueteService } from '../services/paquete.service';
 import { ConductorModel } from '../models/conductor.model';
+import { PaqueteModel } from '../models/paquete.model';
 
 declare var bootstrap: any;
 
@@ -12,8 +14,15 @@ declare var bootstrap: any;
 })
 export class Conductor implements OnInit {
   private conductorService = inject(ConductorService);
+  private paqueteService = inject(PaqueteService);
 
   conductoresLista: ConductorModel[] = [];
+  paquetesLista: PaqueteModel[] = [];
+  paquetesConductor: PaqueteModel[] = [];
+
+  vista: string = 'registrar';
+  idBuscar: number = 0;
+  conductorEncontrado: ConductorModel | null = null;
 
   nombre: string = '';
   edad: number = 0;
@@ -30,7 +39,7 @@ export class Conductor implements OnInit {
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#9fdfb8' : '#ee9fb7';
+    this.toastColor = exito ? '#3fcd76' : '#c40505';
     setTimeout(() => {
       const toastEl = document.getElementById('conductorToast');
       const toast = new bootstrap.Toast(toastEl);
@@ -40,17 +49,56 @@ export class Conductor implements OnInit {
 
   ngOnInit(): void {
     this.cargarLista();
+    this.cargarPaquetes();
   }
 
   cargarLista(): void {
     this.conductorService.getAll().subscribe({
-      next: (response) => {
-        this.conductoresLista = response;
-      },
-      error: () => {
-        this.mostrarToast('Error al cargar la lista', false);
-      },
+      next: (response) => { this.conductoresLista = response; },
+      error: () => { this.mostrarToast('Error al cargar conductores', false); },
     });
+  }
+
+  cargarPaquetes(): void {
+    this.paqueteService.getAll().subscribe({
+      next: (response) => { this.paquetesLista = response; },
+      error: () => { this.paquetesLista = []; },
+    });
+  }
+
+  cambiarVista(v: string): void {
+    this.vista = v;
+    this.idBuscar = 0;
+    this.conductorEncontrado = null;
+    this.paquetesConductor = [];
+    this.limpiarFormulario();
+  }
+
+  buscarPorId(): void {
+    const encontrado = this.conductoresLista.find(c => c.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.modoEdicion = true;
+      this.idEditando = encontrado.id!;
+      this.nombre = encontrado.nombre;
+      this.edad = encontrado.edad;
+      this.fechaInicio = encontrado.fechaInicio;
+      this.tipoVehiculo = encontrado.tipoVehiculo;
+      this.conductorEncontrado = encontrado;
+    } else {
+      this.mostrarToast(`No se encontró conductor con ID ${this.idBuscar}`, false);
+    }
+  }
+
+  buscarPaquetesPorId(): void {
+    const encontrado = this.conductoresLista.find(c => c.id === Number(this.idBuscar));
+    if (encontrado) {
+      this.conductorEncontrado = encontrado;
+      this.paquetesConductor = this.paquetesLista.filter(p => p.idConductor === Number(this.idBuscar));
+    } else {
+      this.conductorEncontrado = null;
+      this.paquetesConductor = [];
+      this.mostrarToast(`No se encontró conductor con ID ${this.idBuscar}`, false);
+    }
   }
 
   guardar(): void {
@@ -88,6 +136,7 @@ export class Conductor implements OnInit {
     this.edad = c.edad;
     this.fechaInicio = c.fechaInicio;
     this.tipoVehiculo = c.tipoVehiculo;
+    this.vista = 'editar';
   }
 
   eliminar(id: number): void {
@@ -110,5 +159,6 @@ export class Conductor implements OnInit {
     this.tipoVehiculo = '';
     this.modoEdicion = false;
     this.idEditando = 0;
+    this.conductorEncontrado = null;
   }
 }
