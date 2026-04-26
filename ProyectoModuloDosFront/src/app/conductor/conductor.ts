@@ -1,6 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ConductorService } from '../services/conductor.service';
 import { ConductorModel } from '../models/conductor.model';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-conductor',
@@ -9,105 +11,104 @@ import { ConductorModel } from '../models/conductor.model';
   styleUrl: './conductor.css',
 })
 export class Conductor implements OnInit {
-  conductorService = inject(ConductorService);
-  conductores: ConductorModel[] = [];
-  statuscode: number = 0;
+  private conductorService = inject(ConductorService);
+
+  conductoresLista: ConductorModel[] = [];
 
   nombre: string = '';
   edad: number = 0;
   fechaInicio: string = '';
   tipoVehiculo: string = '';
 
-  idEditar: number = 0;
-  nombreEditar: string = '';
-  edadEditar: number = 0;
-  fechaInicioEditar: string = '';
-  tipoVehiculoEditar: string = '';
+  modoEdicion: boolean = false;
+  idEditando: number = 0;
 
   toastMensaje: string = '';
-  toastTipo: string = '';
+  toastTitulo: string = '';
+  toastColor: string = '';
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.loadConductores();
+  mostrarToast(mensaje: string, exito: boolean): void {
+    this.toastMensaje = mensaje;
+    this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
+    this.toastColor = exito ? '#9fdfb8' : '#ee9fb7';
+    setTimeout(() => {
+      const toastEl = document.getElementById('conductorToast');
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }, 100);
   }
 
-  mostrarToast(mensaje: string, tipo: string): void {
-    this.toastMensaje = mensaje;
-    this.toastTipo = tipo;
-    const toastEl = document.getElementById('conductorToast');
-    if (toastEl) {
-      const toast = (window as any).bootstrap.Toast.getOrCreateInstance(toastEl);
-      toast.show();
+  ngOnInit(): void {
+    this.cargarLista();
+  }
+
+  cargarLista(): void {
+    this.conductorService.getAll().subscribe({
+      next: (response) => {
+        this.conductoresLista = response;
+      },
+      error: () => {
+        this.mostrarToast('Error al cargar la lista', false);
+      },
+    });
+  }
+
+  guardar(): void {
+    if (this.modoEdicion) {
+      this.conductorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
+        next: (response) => {
+          this.mostrarToast(response, true);
+          this.limpiarFormulario();
+          this.cargarLista();
+        },
+        error: (error) => {
+          const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+          this.mostrarToast(msg, false);
+        },
+      });
+    } else {
+      this.conductorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
+        next: (response) => {
+          this.mostrarToast(response, true);
+          this.limpiarFormulario();
+          this.cargarLista();
+        },
+        error: (error) => {
+          const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+          this.mostrarToast(msg, false);
+        },
+      });
     }
   }
 
-  loadConductores(): void {
-    this.conductorService.getAll().subscribe({
-      next: (response: any) => {
-        console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
-        this.statuscode = response.status;
-        const body = response.body;
-        if (body && body.data) {
-          this.conductores = body.data;
-        } else if (Array.isArray(body)) {
-          this.conductores = body;
-        } else {
-          this.conductores = [];
-        }
-        this.conductores = [...this.conductores];
-      },
-      error: (error: any) => {
-        this.statuscode = error.status;
-        this.conductores = [];
-        this.mostrarToast('Error al cargar los conductores', 'danger');
-      },
-    });
-  }
-
-  crear(): void {
-    this.conductorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
-      next: () => {
-        this.mostrarToast('Conductor creado correctamente', 'success');
-        this.loadConductores();
-      },
-      error: () => {
-        this.mostrarToast('Error al crear el conductor', 'danger');
-      },
-    });
-  }
-
-  actualizar(): void {
-    this.conductorService.update(this.idEditar, this.nombreEditar, this.edadEditar, this.fechaInicioEditar, this.tipoVehiculoEditar).subscribe({
-      next: () => {
-        this.mostrarToast('Conductor actualizado correctamente', 'success');
-        this.loadConductores();
-      },
-      error: () => {
-        this.mostrarToast('Error al actualizar el conductor', 'danger');
-      },
-    });
+  editar(c: ConductorModel): void {
+    this.modoEdicion = true;
+    this.idEditando = c.id!;
+    this.nombre = c.nombre;
+    this.edad = c.edad;
+    this.fechaInicio = c.fechaInicio;
+    this.tipoVehiculo = c.tipoVehiculo;
   }
 
   eliminar(id: number): void {
     this.conductorService.delete(id).subscribe({
-      next: () => {
-        this.mostrarToast('Conductor eliminado correctamente', 'success');
-        this.loadConductores();
+      next: (response) => {
+        this.mostrarToast(response, true);
+        this.cargarLista();
       },
-      error: () => {
-        this.mostrarToast('Error al eliminar el conductor', 'danger');
+      error: (error) => {
+        const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+        this.mostrarToast(msg, false);
       },
     });
   }
 
-  seleccionarEditar(conductor: ConductorModel): void {
-    this.idEditar = conductor.id!;
-    this.nombreEditar = conductor.nombre;
-    this.edadEditar = conductor.edad;
-    this.fechaInicioEditar = conductor.fechaInicio;
-    this.tipoVehiculoEditar = conductor.tipoVehiculo;
+  limpiarFormulario(): void {
+    this.nombre = '';
+    this.edad = 0;
+    this.fechaInicio = '';
+    this.tipoVehiculo = '';
+    this.modoEdicion = false;
+    this.idEditando = 0;
   }
 }

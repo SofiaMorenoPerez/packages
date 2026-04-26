@@ -1,6 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ManipuladorService } from '../services/manipulador.service';
 import { ManipuladorModel } from '../models/manipulador.model';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-manipulador',
@@ -9,105 +11,104 @@ import { ManipuladorModel } from '../models/manipulador.model';
   styleUrl: './manipulador.css',
 })
 export class Manipulador implements OnInit {
-  manipuladorService = inject(ManipuladorService);
-  manipuladores: ManipuladorModel[] = [];
-  statuscode: number = 0;
+  private manipuladorService = inject(ManipuladorService);
+
+  manipuladoresLista: ManipuladorModel[] = [];
 
   nombre: string = '';
   edad: number = 0;
   fechaInicio: string = '';
   tipoDePaquete: string = '';
 
-  idEditar: number = 0;
-  nombreEditar: string = '';
-  edadEditar: number = 0;
-  fechaInicioEditar: string = '';
-  tipoDePaqueteEditar: string = '';
+  modoEdicion: boolean = false;
+  idEditando: number = 0;
 
   toastMensaje: string = '';
-  toastTipo: string = '';
+  toastTitulo: string = '';
+  toastColor: string = '';
 
-  constructor() {}
-
-  ngOnInit(): void {
-    this.loadManipuladores();
+  mostrarToast(mensaje: string, exito: boolean): void {
+    this.toastMensaje = mensaje;
+    this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
+    this.toastColor = exito ? '#9fdfb8' : '#ee9fb7';
+    setTimeout(() => {
+      const toastEl = document.getElementById('manipuladorToast');
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }, 100);
   }
 
-  mostrarToast(mensaje: string, tipo: string): void {
-    this.toastMensaje = mensaje;
-    this.toastTipo = tipo;
-    const toastEl = document.getElementById('manipuladorToast');
-    if (toastEl) {
-      const toast = (window as any).bootstrap.Toast.getOrCreateInstance(toastEl);
-      toast.show();
+  ngOnInit(): void {
+    this.cargarLista();
+  }
+
+  cargarLista(): void {
+    this.manipuladorService.getAll().subscribe({
+      next: (response) => {
+        this.manipuladoresLista = response as any;
+      },
+      error: () => {
+        this.mostrarToast('Error al cargar la lista', false);
+      },
+    });
+  }
+
+  guardar(): void {
+    if (this.modoEdicion) {
+      this.manipuladorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
+        next: (response) => {
+          this.mostrarToast(response, true);
+          this.limpiarFormulario();
+          this.cargarLista();
+        },
+        error: (error) => {
+          const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+          this.mostrarToast(msg, false);
+        },
+      });
+    } else {
+      this.manipuladorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
+        next: (response) => {
+          this.mostrarToast(response, true);
+          this.limpiarFormulario();
+          this.cargarLista();
+        },
+        error: (error) => {
+          const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+          this.mostrarToast(msg, false);
+        },
+      });
     }
   }
 
-  loadManipuladores(): void {
-    this.manipuladorService.getAll().subscribe({
-      next: (response: any) => {
-        console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
-        this.statuscode = response.status;
-        const body = response.body;
-        if (body && body.data) {
-          this.manipuladores = body.data;
-        } else if (Array.isArray(body)) {
-          this.manipuladores = body;
-        } else {
-          this.manipuladores = [];
-        }
-        this.manipuladores = [...this.manipuladores];
-      },
-      error: (error: any) => {
-        this.statuscode = error.status;
-        this.manipuladores = [];
-        this.mostrarToast('Error al cargar los manipuladores', 'danger');
-      },
-    });
-  }
-
-  crear(): void {
-    this.manipuladorService.create(this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
-      next: () => {
-        this.mostrarToast('Manipulador creado correctamente', 'success');
-        this.loadManipuladores();
-      },
-      error: () => {
-        this.mostrarToast('Error al crear el manipulador', 'danger');
-      },
-    });
-  }
-
-  actualizar(): void {
-    this.manipuladorService.update(this.idEditar, this.nombreEditar, this.edadEditar, this.fechaInicioEditar, this.tipoDePaqueteEditar).subscribe({
-      next: () => {
-        this.mostrarToast('Manipulador actualizado correctamente', 'success');
-        this.loadManipuladores();
-      },
-      error: () => {
-        this.mostrarToast('Error al actualizar el manipulador', 'danger');
-      },
-    });
+  editar(m: ManipuladorModel): void {
+    this.modoEdicion = true;
+    this.idEditando = m.id;
+    this.nombre = m.nombre;
+    this.edad = m.edad;
+    this.fechaInicio = m.fechaInicio;
+    this.tipoDePaquete = m.tipoDePaquete;
   }
 
   eliminar(id: number): void {
     this.manipuladorService.delete(id).subscribe({
-      next: () => {
-        this.mostrarToast('Manipulador eliminado correctamente', 'success');
-        this.loadManipuladores();
+      next: (response) => {
+        this.mostrarToast(response, true);
+        this.cargarLista();
       },
-      error: () => {
-        this.mostrarToast('Error al eliminar el manipulador', 'danger');
+      error: (error) => {
+        const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
+        this.mostrarToast(msg, false);
       },
     });
   }
 
-  seleccionarEditar(manipulador: ManipuladorModel): void {
-    this.idEditar = manipulador.id!;
-    this.nombreEditar = manipulador.nombre;
-    this.edadEditar = manipulador.edad;
-    this.fechaInicioEditar = manipulador.fechaInicio;
-    this.tipoDePaqueteEditar = manipulador.tipoDePaquete;
+  limpiarFormulario(): void {
+    this.nombre = '';
+    this.edad = 0;
+    this.fechaInicio = '';
+    this.tipoDePaquete = '';
+    this.modoEdicion = false;
+    this.idEditando = 0;
   }
 }
