@@ -15,6 +15,7 @@ export class Paquete implements OnInit {
   private paqueteService = inject(PaqueteService);
 
   paquetesLista: PaqueteModel[] = [];
+  paquetesUsuario: PaqueteModel[] = [];
 
   idUsuario: number = 0;
   idConductor: number = 0;
@@ -30,12 +31,20 @@ export class Paquete implements OnInit {
   tiempo: number = 0;
 
   tiposDePaquete = Object.values(TipoPaquete);
-
+  vista: string = 'crear';
+  idBuscar: number = 0;
   modoEdicion: boolean = false;
   idEditando: number = 0;
   toastMensaje: string = '';
   toastTitulo: string = '';
   toastColor: string = '';
+
+  cambiarVista(v: string): void {
+    this.vista = v;
+    this.idBuscar = 0;
+    this.paquetesUsuario = [];
+    this.limpiarFormulario();
+  }
 
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
@@ -71,6 +80,17 @@ export class Paquete implements OnInit {
         this.mostrarToast('Error al cargar la lista', false);
       },
     });
+  }
+
+  buscarPaquetesPorIdUsuario(): void {
+    if (this.idBuscar <= 0) {
+      this.mostrarToast('El ID debe ser mayor a 0', false);
+      return;
+    }
+    this.paquetesUsuario = this.paquetesLista.filter(p => p.idUsuario === Number(this.idBuscar));
+    if (this.paquetesUsuario.length === 0) {
+      this.mostrarToast(`No se encontraron paquetes para el usuario con ID ${this.idBuscar}`, false);
+    }
   }
 
   validarTabla(): boolean {
@@ -115,8 +135,8 @@ export class Paquete implements OnInit {
     }
     return true;
   }
+
   guardar(): void {
-    if (!this.validarTabla()) return;
     if (this.modoEdicion) {
       this.paqueteService
         .update(this.idEditando, this.ciudadDeDestino, this.direccionDeDestino)
@@ -132,6 +152,7 @@ export class Paquete implements OnInit {
           },
         });
     } else {
+      if (!this.validarTabla()) return;
       this.paqueteService
         .create(this.idUsuario, this.idConductor, this.idManipulador,
           this.ciudadDeOrigen, this.ciudadDeDestino,
@@ -154,18 +175,8 @@ export class Paquete implements OnInit {
   editar(p: PaqueteModel): void {
     this.modoEdicion = true;
     this.idEditando = p.id;
-    this.idUsuario = p.idUsuario;
-    this.idConductor = p.idConductor;
-    this.idManipulador = p.idManipulador;
-    this.ciudadDeOrigen = p.ciudadDeOrigen;
     this.ciudadDeDestino = p.ciudadDeDestino;
-    this.direccionDeOrigen = p.direccionDeOrigen;
     this.direccionDeDestino = p.direccionDeDestino;
-    this.fechaEnvio = p.fechaEnvio;
-    this.tipo = p.tipo as TipoPaquete;
-    this.peso = p.peso;
-    this.maxHoras = p.maxHoras;
-    this.tiempo = p.tiempo;
   }
 
   eliminar(id: number): void {
@@ -173,6 +184,7 @@ export class Paquete implements OnInit {
       next: (response) => {
         this.mostrarToast(response, true);
         this.cargarLista();
+        this.paquetesUsuario = this.paquetesUsuario.filter(p => p.id !== id);
       },
       error: (error) => {
         const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);
@@ -196,5 +208,7 @@ export class Paquete implements OnInit {
     this.tiempo = 0;
     this.modoEdicion = false;
     this.idEditando = 0;
+    this.paquetesUsuario = [];
+    this.idBuscar = 0;
   }
 }
