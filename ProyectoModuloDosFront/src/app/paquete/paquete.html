@@ -117,9 +117,6 @@
         </tbody>
       </table>
 
-      <p *ngIf="paquetesUsuario.length === 0 && idBuscar > 0" style="margin-top:1rem; color:#888;">
-        Este usuario no tiene paquetes registrados.
-      </p>
     </div>
 
     <div *ngIf="modoEdicion">
@@ -184,9 +181,6 @@
       </tbody>
     </table>
 
-    <p *ngIf="paquetesUsuario.length === 0 && idBuscar > 0" style="margin-top:1rem; color:#888;">
-      Este usuario no tiene paquetes registrados.
-    </p>
   </div>
 
   <div *ngIf="vista === 'lista'">
@@ -235,4 +229,14 @@
     </div>
   </div>
 
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="paqueteToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-header" [ngStyle]="{'background-color': toastColor}">
+      <strong class="me-auto">{{ toastTitulo }}</strong>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body">{{ toastMensaje }}</div>
+  </div>
 </div>
