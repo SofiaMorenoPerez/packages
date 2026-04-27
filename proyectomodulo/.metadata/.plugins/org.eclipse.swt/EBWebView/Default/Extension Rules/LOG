@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
 2026/04/27-11:29:03.944 4738 Creating DB D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Extension Rules since it was missing.
 2026/04/27-11:29:04.169 4738 Reusing MANIFEST D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Extension Rules/MANIFEST-000001
 2026/04/27-11:29:04.188 4738 Recovering log #3
 2026/04/27-11:29:04.189 4738 Reusing old log D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Extension Rules/000003.log 
+=======
+2026/04/25-21:08:16.689 2f90 Creating DB E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Extension Rules since it was missing.
+2026/04/25-21:08:17.077 2f90 Reusing MANIFEST E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Extension Rules/MANIFEST-000001
+>>>>>>> Stashed changes

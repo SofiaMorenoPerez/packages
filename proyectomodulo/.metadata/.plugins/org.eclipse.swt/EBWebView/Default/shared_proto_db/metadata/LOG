@@ -1,4 +1,9 @@
+<<<<<<< Updated upstream
 2026/04/27-11:29:04.028 5574 Creating DB D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\shared_proto_db\metadata since it was missing.
 2026/04/27-11:29:04.285 5574 Reusing MANIFEST D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\shared_proto_db\metadata/MANIFEST-000001
 2026/04/27-11:29:04.305 5574 Recovering log #3
 2026/04/27-11:29:04.307 5574 Reusing old log D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\shared_proto_db\metadata/000003.log 
+=======
+2026/04/25-21:08:16.793 1aa0 Creating DB E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\shared_proto_db\metadata since it was missing.
+2026/04/25-21:08:17.126 1aa0 Reusing MANIFEST E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\shared_proto_db\metadata/MANIFEST-000001
+>>>>>>> Stashed changes
