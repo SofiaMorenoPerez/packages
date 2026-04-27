@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { PaqueteService } from '../services/paquete.service';
 import { PaqueteModel } from '../models/paquete.model';
 import { TipoPaquete } from '../models/tipo.paquete';
@@ -22,6 +22,7 @@ export class Paquete implements OnInit {
   private usuarioService = inject(UsuarioService);
   private conductorService = inject(ConductorService);
   private manipuladorService = inject(ManipuladorService);
+  private cdr = inject(ChangeDetectorRef);
 
   usuariosLista: UsuarioModel[] = [];
   conductoresLista: ConductorModel[] = [];
@@ -51,22 +52,65 @@ export class Paquete implements OnInit {
   toastTitulo: string = '';
   toastColor: string = '';
 
+  mostrarToast(mensaje: string, exito: boolean): void {
+    this.toastMensaje = mensaje;
+    this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
+    this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
+    this.cdr.detectChanges();
+    const toastEl = document.getElementById('paqueteToast');
+    if (toastEl) {
+      const toastActual = bootstrap.Toast.getInstance(toastEl);
+      if (toastActual) toastActual.dispose();
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+      toast.show();
+    }
+  }
+
+  validar(): boolean {
+    if (!this.idUsuario || this.idUsuario <= 0) {
+      this.mostrarToast('El ID de usuario es obligatorio', false);
+      return false;
+    }
+    if (!this.idConductor || this.idConductor <= 0) {
+      this.mostrarToast('El ID de conductor es obligatorio', false);
+      return false;
+    }
+    if (!this.idManipulador || this.idManipulador <= 0) {
+      this.mostrarToast('El ID de manipulador es obligatorio', false);
+      return false;
+    }
+    if (!this.tipo) {
+      this.mostrarToast('El tipo de paquete es obligatorio', false);
+      return false;
+    }
+    if (!this.ciudadDeOrigen || this.ciudadDeOrigen.trim() === '') {
+      this.mostrarToast('La ciudad de origen es obligatoria', false);
+      return false;
+    }
+    if (!this.ciudadDeDestino || this.ciudadDeDestino.trim() === '') {
+      this.mostrarToast('La ciudad de destino es obligatoria', false);
+      return false;
+    }
+    if (!this.direccionDeOrigen || this.direccionDeOrigen.trim() === '') {
+      this.mostrarToast('La dirección de origen es obligatoria', false);
+      return false;
+    }
+    if (!this.direccionDeDestino || this.direccionDeDestino.trim() === '') {
+      this.mostrarToast('La dirección de destino es obligatoria', false);
+      return false;
+    }
+    if (!this.peso || this.peso <= 0) {
+      this.mostrarToast('El peso debe ser mayor a 0', false);
+      return false;
+    }
+    return true;
+  }
+
   cambiarVista(v: string): void {
     this.vista = v;
     this.idBuscar = 0;
     this.paquetesUsuario = [];
     this.limpiarFormulario();
-  }
-
-  mostrarToast(mensaje: string, exito: boolean): void {
-    this.toastMensaje = mensaje;
-    this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
-    setTimeout(() => {
-      const toastEl = document.getElementById('paqueteToast');
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }, 100);
   }
 
   ngOnInit(): void {
@@ -75,6 +119,7 @@ export class Paquete implements OnInit {
     this.cargarConductores();
     this.cargarManipuladores();
   }
+
   cargarUsuarios(): void {
     this.usuarioService.getAll().subscribe({
       next: (response) => { this.usuariosLista = response; },
@@ -108,12 +153,8 @@ export class Paquete implements OnInit {
 
   cargarLista(): void {
     this.paqueteService.getAll().subscribe({
-      next: (response) => {
-        this.paquetesLista = response;
-      },
-      error: () => {
-        this.mostrarToast('Error al cargar la lista', false);
-      },
+      next: (response) => { this.paquetesLista = response; },
+      error: () => { this.mostrarToast('Error al cargar la lista', false); },
     });
   }
 
@@ -127,7 +168,6 @@ export class Paquete implements OnInit {
       this.mostrarToast(`No se encontraron paquetes para el usuario con ID ${this.idBuscar}`, false);
     }
   }
-
 
   guardar(): void {
     if (this.modoEdicion) {
@@ -145,6 +185,7 @@ export class Paquete implements OnInit {
           },
         });
     } else {
+      if (!this.validar()) return;
       this.paqueteService
         .create(
           Number(this.idUsuario),
@@ -159,10 +200,8 @@ export class Paquete implements OnInit {
         .subscribe({
           next: (response) => {
             this.mostrarToast(response, true);
-            setTimeout(() => {
-              this.limpiarFormulario();
-              this.cargarLista();
-            }, 2000);
+            this.limpiarFormulario();
+            this.cargarLista();
           },
           error: (error) => {
             const msg = typeof error.error === 'string' ? error.error : JSON.stringify(error.error);

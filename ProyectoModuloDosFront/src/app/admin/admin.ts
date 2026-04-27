@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AdminService } from '../services/admin.service';
 import { UsuarioService } from '../services/usuario.service';
 import { PaqueteService } from '../services/paquete.service';
@@ -24,6 +24,7 @@ export class Admin implements OnInit {
   private paqueteService = inject(PaqueteService);
   private conductorService = inject(ConductorService);
   private manipuladorService = inject(ManipuladorService);
+  private cdr = inject(ChangeDetectorRef);
 
   adminsLista: AdminModel[] = [];
   usuariosLista: UsuarioModel[] = [];
@@ -52,11 +53,34 @@ export class Admin implements OnInit {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
     this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
-    setTimeout(() => {
-      const toastEl = document.getElementById('adminToast');
-      const toast = new bootstrap.Toast(toastEl);
+    this.cdr.detectChanges();
+    const toastEl = document.getElementById('adminToast');
+    if (toastEl) {
+      const toastActual = bootstrap.Toast.getInstance(toastEl);
+      if (toastActual) toastActual.dispose();
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
       toast.show();
-    }, 50);
+    }
+  }
+
+  validar(): boolean {
+    if (!this.nombre || this.nombre.trim() === '') {
+      this.mostrarToast('El nombre es obligatorio', false);
+      return false;
+    }
+    if (!this.edad || this.edad <= 0) {
+      this.mostrarToast('La edad es obligatoria', false);
+      return false;
+    }
+    if (!this.fechaInicio || this.fechaInicio.trim() === '') {
+      this.mostrarToast('La fecha de inicio es obligatoria', false);
+      return false;
+    }
+    if (!this.zonaAsignada || this.zonaAsignada.trim() === '') {
+      this.mostrarToast('La zona asignada es obligatoria', false);
+      return false;
+    }
+    return true;
   }
 
   ngOnInit(): void {
@@ -126,6 +150,7 @@ export class Admin implements OnInit {
   }
 
   guardar(): void {
+    if (!this.validar()) return;
     if (this.modoEdicion) {
       this.adminService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.zonaAsignada).subscribe({
         next: (response) => {

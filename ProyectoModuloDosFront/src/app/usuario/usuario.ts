@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { UsuarioService } from '../services/usuario.service';
 import { PaqueteService } from '../services/paquete.service';
 import { UsuarioModel } from '../models/usuario.model';
@@ -16,6 +16,7 @@ declare var bootstrap: any;
 export class Usuario implements OnInit {
   private usuarioService = inject(UsuarioService);
   private paqueteService = inject(PaqueteService);
+  private cdr = inject(ChangeDetectorRef);
 
   usuariosLista: UsuarioModel[] = [];
   paquetesLista: PaqueteModel[] = [];
@@ -44,11 +45,38 @@ export class Usuario implements OnInit {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
     this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
-    setTimeout(() => {
-      const toastEl = document.getElementById('usuarioToast');
-      const toast = new bootstrap.Toast(toastEl);
+    this.cdr.detectChanges(); // fuerza Angular a actualizar el DOM
+    const toastEl = document.getElementById('usuarioToast');
+    if (toastEl) {
+      const toastActual = bootstrap.Toast.getInstance(toastEl);
+      if (toastActual) toastActual.dispose();
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
       toast.show();
-    }, 50);
+    }
+  }
+
+  validar(): boolean {
+    if (!this.nombre || this.nombre.trim() === '') {
+      this.mostrarToast('El nombre es obligatorio', false);
+      return false;
+    }
+    if (!this.tipo) {
+      this.mostrarToast('El tipo de usuario es obligatorio', false);
+      return false;
+    }
+    if (!this.ciudad || this.ciudad.trim() === '') {
+      this.mostrarToast('La ciudad es obligatoria', false);
+      return false;
+    }
+    if (!this.direccion || this.direccion.trim() === '') {
+      this.mostrarToast('La direccion es obligatoria', false);
+      return false;
+    }
+    if (!this.telefono || this.telefono <= 0) {
+      this.mostrarToast('El telefono es obligatorio', false);
+      return false;
+    }
+    return true;
   }
 
   ngOnInit(): void {
@@ -107,6 +135,7 @@ export class Usuario implements OnInit {
   }
 
   guardar(): void {
+    if (!this.validar()) return;
     if (this.modoEdicion) {
       this.usuarioService
         .update(this.idEditando, this.nombre, this.tipo, this.ciudad, this.direccion, this.telefono)

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ManipuladorService } from '../services/manipulador.service';
 import { PaqueteService } from '../services/paquete.service';
 import { ManipuladorModel } from '../models/manipulador.model';
@@ -15,6 +15,7 @@ declare var bootstrap: any;
 export class Manipulador implements OnInit {
   private manipuladorService = inject(ManipuladorService);
   private paqueteService = inject(PaqueteService);
+  private cdr = inject(ChangeDetectorRef);
 
   manipuladoresLista: ManipuladorModel[] = [];
   paquetesLista: PaqueteModel[] = [];
@@ -40,11 +41,34 @@ export class Manipulador implements OnInit {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
     this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
-    setTimeout(() => {
-      const toastEl = document.getElementById('manipuladorToast');
-      const toast = new bootstrap.Toast(toastEl);
+    this.cdr.detectChanges();
+    const toastEl = document.getElementById('manipuladorToast');
+    if (toastEl) {
+      const toastActual = bootstrap.Toast.getInstance(toastEl);
+      if (toastActual) toastActual.dispose();
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
       toast.show();
-    }, 50);
+    }
+  }
+
+  validar(): boolean {
+    if (!this.nombre || this.nombre.trim() === '') {
+      this.mostrarToast('El nombre es obligatorio', false);
+      return false;
+    }
+    if (!this.edad || this.edad <= 0) {
+      this.mostrarToast('La edad es obligatoria', false);
+      return false;
+    }
+    if (!this.fechaInicio || this.fechaInicio.trim() === '') {
+      this.mostrarToast('La fecha de inicio es obligatoria', false);
+      return false;
+    }
+    if (!this.tipoDePaquete || this.tipoDePaquete.trim() === '') {
+      this.mostrarToast('El tipo de paquete es obligatorio', false);
+      return false;
+    }
+    return true;
   }
 
   ngOnInit(): void {
@@ -101,7 +125,6 @@ export class Manipulador implements OnInit {
     }
   }
 
-
   buscarPorIdYEliminar(): void {
     const encontrado = this.manipuladoresLista.find(u => u.id === Number(this.idBuscar));
     if (encontrado) {
@@ -111,8 +134,8 @@ export class Manipulador implements OnInit {
     }
   }
 
-
   guardar(): void {
+    if (!this.validar()) return;
     if (this.modoEdicion) {
       this.manipuladorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoDePaquete).subscribe({
         next: (response) => {
@@ -149,7 +172,6 @@ export class Manipulador implements OnInit {
       });
     }
   }
-
 
   eliminar(id: number): void {
     this.manipuladorService.delete(id).subscribe({

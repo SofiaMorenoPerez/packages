@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ConductorService } from '../services/conductor.service';
 import { PaqueteService } from '../services/paquete.service';
 import { ConductorModel } from '../models/conductor.model';
@@ -15,6 +15,7 @@ declare var bootstrap: any;
 export class Conductor implements OnInit {
   private conductorService = inject(ConductorService);
   private paqueteService = inject(PaqueteService);
+  private cdr = inject(ChangeDetectorRef);
 
   conductoresLista: ConductorModel[] = [];
   paquetesLista: PaqueteModel[] = [];
@@ -40,11 +41,34 @@ export class Conductor implements OnInit {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
     this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
-    setTimeout(() => {
-      const toastEl = document.getElementById('conductorToast');
-      const toast = new bootstrap.Toast(toastEl);
+    this.cdr.detectChanges();
+    const toastEl = document.getElementById('conductorToast');
+    if (toastEl) {
+      const toastActual = bootstrap.Toast.getInstance(toastEl);
+      if (toastActual) toastActual.dispose();
+      const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
       toast.show();
-    }, 50);
+    }
+  }
+
+  validar(): boolean {
+    if (!this.nombre || this.nombre.trim() === '') {
+      this.mostrarToast('El nombre es obligatorio', false);
+      return false;
+    }
+    if (!this.edad || this.edad <= 0) {
+      this.mostrarToast('La edad es obligatoria', false);
+      return false;
+    }
+    if (!this.fechaInicio || this.fechaInicio.trim() === '') {
+      this.mostrarToast('La fecha de inicio es obligatoria', false);
+      return false;
+    }
+    if (!this.tipoVehiculo || this.tipoVehiculo.trim() === '') {
+      this.mostrarToast('El tipo de vehículo es obligatorio', false);
+      return false;
+    }
+    return true;
   }
 
   ngOnInit(): void {
@@ -110,8 +134,8 @@ export class Conductor implements OnInit {
     }
   }
 
-
   guardar(): void {
+    if (!this.validar()) return;
     if (this.modoEdicion) {
       this.conductorService.update(this.idEditando, this.nombre, this.edad, this.fechaInicio, this.tipoVehiculo).subscribe({
         next: (response) => {
@@ -148,7 +172,6 @@ export class Conductor implements OnInit {
       });
     }
   }
-
 
   eliminar(id: number): void {
     this.conductorService.delete(id).subscribe({
