@@ -10,6 +10,14 @@
   color: #ffffff;
   text-align: center;
 }
+.fondo-inicio {
+  background-color: #85b9e0;
+  width: auto;
+  height: auto;
+  background-position: center;
+  color: #090909;
+
+}
 
 .hero-content {
   display: flex;
