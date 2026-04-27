@@ -61,7 +61,7 @@ export class Paquete implements OnInit {
   mostrarToast(mensaje: string, exito: boolean): void {
     this.toastMensaje = mensaje;
     this.toastTitulo = exito ? '¡Éxito! ✅' : '¡Error! ❌';
-    this.toastColor = exito ? '#b5f1ca' : '#ee9fb7';
+    this.toastColor = exito ? '#b5f1ca' : '#e896ae';
     setTimeout(() => {
       const toastEl = document.getElementById('paqueteToast');
       const toast = new bootstrap.Toast(toastEl);
