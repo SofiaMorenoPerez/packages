@@ -128,49 +128,6 @@ export class Paquete implements OnInit {
     }
   }
 
-  validarTabla(): boolean {
-    const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const letrasNumeros = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ0-9\s#-]+$/;
-
-    if (this.idUsuario <= 0) {
-      this.mostrarToast('El ID de usuario debe ser mayor a 0', false);
-      return false;
-    }
-    if (this.idConductor <= 0) {
-      this.mostrarToast('El ID de conductor debe ser mayor a 0', false);
-      return false;
-    }
-    if (this.idManipulador <= 0) {
-      this.mostrarToast('El ID de manipulador debe ser mayor a 0', false);
-      return false;
-    }
-    if (!this.tipo) {
-      this.mostrarToast('Debe seleccionar un tipo de paquete', false);
-      return false;
-    }
-    if (!soloLetras.test(this.ciudadDeOrigen)) {
-      this.mostrarToast('La ciudad de origen solo puede contener letras', false);
-      return false;
-    }
-    if (!soloLetras.test(this.ciudadDeDestino)) {
-      this.mostrarToast('La ciudad de destino solo puede contener letras', false);
-      return false;
-    }
-    if (!letrasNumeros.test(this.direccionDeOrigen)) {
-      this.mostrarToast('La dirección de origen contiene caracteres no válidos', false);
-      return false;
-    }
-    if (!letrasNumeros.test(this.direccionDeDestino)) {
-      this.mostrarToast('La dirección de destino contiene caracteres no válidos', false);
-      return false;
-    }
-    if (this.peso <= 0) {
-      this.mostrarToast('El peso debe ser mayor a 0', false);
-      return false;
-    }
-    return true;
-  }
-
   guardar(): void {
     if (this.modoEdicion) {
       this.paqueteService
@@ -187,12 +144,17 @@ export class Paquete implements OnInit {
           },
         });
     } else {
-      if (!this.validarTabla()) return;
       this.paqueteService
-        .create(this.idUsuario, this.idConductor, this.idManipulador,
-          this.ciudadDeOrigen, this.ciudadDeDestino,
-          this.direccionDeOrigen, this.direccionDeDestino,
-          this.tipo, this.peso)
+        .create(
+          Number(this.idUsuario),
+          Number(this.idConductor),
+          Number(this.idManipulador),
+          this.ciudadDeOrigen,
+          this.ciudadDeDestino,
+          this.direccionDeOrigen,
+          this.direccionDeDestino,
+          this.tipo,
+          Number(this.peso))
         .subscribe({
           next: (response) => {
             this.mostrarToast(response, true);
