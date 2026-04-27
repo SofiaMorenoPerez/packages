@@ -33,6 +33,8 @@ export class Admin implements OnInit {
 
   vista: string = 'registrar';
   idBuscar: number = 0;
+  adminAutenticado: boolean = false;
+  idLogin: number = 0;
 
   nombre: string = '';
   edad: number = 0;
@@ -61,11 +63,20 @@ export class Admin implements OnInit {
     this.cargarLista();
   }
 
+  verificarAcceso(): void {
+    const encontrado = this.adminsLista.find(a => a.id === Number(this.idLogin));
+    if (encontrado) {
+      this.adminAutenticado = true;
+      this.cargarTodasListas();
+      this.mostrarToast(`Bienvenido ${encontrado.nombre} ✅`, true);
+    } else {
+      this.mostrarToast('ID no válido, acceso denegado ❌', false);
+    }
+  }
+
   cargarLista(): void {
     this.adminService.getAll().subscribe({
-      next: (response) => {
-        this.adminsLista = response ?? [];
-      },
+      next: (response) => { this.adminsLista = response ?? []; },
       error: () => { this.mostrarToast('Error al cargar administrativos', false); },
     });
   }
@@ -92,10 +103,11 @@ export class Admin implements OnInit {
   cambiarVista(v: string): void {
     this.vista = v;
     this.idBuscar = 0;
+    this.adminAutenticado = false;
+    this.idLogin = 0;
     this.limpiarFormulario();
     if (v === 'mostrar') {
       this.cargarLista();
-      this.cargarTodasListas();
     }
   }
 
@@ -150,7 +162,6 @@ export class Admin implements OnInit {
       });
     }
   }
-
 
   eliminar(id: number): void {
     this.adminService.delete(id).subscribe({
