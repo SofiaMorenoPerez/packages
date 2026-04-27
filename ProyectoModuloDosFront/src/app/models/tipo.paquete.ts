@@ -1,0 +1,5 @@
+export enum TipoPaquete {
+  ALIMENTICIO = 'ALIMENTICIO',
+  NO_ALIMENTICIO = 'NO_ALIMENTICIO',
+  CARTA = 'CARTA'
+}

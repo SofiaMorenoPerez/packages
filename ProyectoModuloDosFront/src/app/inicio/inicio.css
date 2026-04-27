@@ -1,0 +1,98 @@
+.fondo-bienvenida {
+  background-image: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+  url("https://www.pointmeup.com/hubfs/POINT%20-%20BLOG/Portadas/blog-servicio-domicilio.jpg");
+  height: 420px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  text-align: center;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  opacity: 0.85;
+  margin: 0;
+  font-style: italic;
+}
+
+.descripcion {
+  text-align: center;
+  padding: 28px 20px 10px;
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.opciones-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px 20px 60px;
+  flex-wrap: wrap;
+}
+
+.opcion-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+  padding: 36px 30px;
+  width: 240px;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.opcion-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+}
+
+.opcion-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.opcion-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.opcion-card p {
+  font-size: 0.9rem;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+.btn-opcion {
+  background-color: #3a3a5c;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.btn-opcion:hover {
+  background-color: #52527a;
+}
