@@ -1,9 +1,0 @@
-<<<<<<< Updated upstream
-2026/04/27-11:29:04.034 623c Creating DB D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
-2026/04/27-11:29:04.176 623c Reusing MANIFEST D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
-2026/04/27-11:29:04.191 623c Recovering log #3
-2026/04/27-11:29:04.195 623c Reusing old log D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/000003.log 
-=======
-2026/04/25-21:08:16.846 55ac Creating DB E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb since it was missing.
-2026/04/25-21:08:17.379 55ac Reusing MANIFEST E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Local Storage\leveldb/MANIFEST-000001
->>>>>>> Stashed changes

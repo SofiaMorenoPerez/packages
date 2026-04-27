@@ -1,9 +1,0 @@
-<<<<<<< Updated upstream
-2026/04/27-11:29:06.187 623c Creating DB D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Session Storage since it was missing.
-2026/04/27-11:29:06.388 623c Reusing MANIFEST D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Session Storage/MANIFEST-000001
-2026/04/27-11:29:06.400 623c Recovering log #3
-2026/04/27-11:29:06.404 623c Reusing old log D:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Session Storage/000003.log 
-=======
-2026/04/25-21:08:20.779 55ac Creating DB E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Session Storage since it was missing.
-2026/04/25-21:08:21.195 55ac Reusing MANIFEST E:\packages\proyectomodulo\.metadata\.plugins\org.eclipse.swt\EBWebView\Default\Session Storage/MANIFEST-000001
->>>>>>> Stashed changes
